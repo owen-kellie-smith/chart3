@@ -5,6 +5,6 @@ Implementation is via PHP / MySQL.
 
 Demo is at http://tsbchart.com/
 
-See https://github.com/owen-kellie-smith/chart2/wiki for how to get going
+See https://github.com/owen-kellie-smith/chart3/wiki for how to get going
 
 
