@@ -93,6 +93,7 @@ $result = mysqli_query($link, $sql);
 if ($result){
 	$i = 1;
     	while($row = mysqli_fetch_row( $result )) {
+                $in = array();
 		$practiceStart='19:30:00';
 		$in['sound'] = $row[5];
 		if (strlen($in['sound']) > 0 && $in['sound'] <> '00:00:00'){

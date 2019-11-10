@@ -12,7 +12,7 @@ private $arrangement;
 
 function getFooter(){
 
-$form = "<p>Any bugs, please let Owen know at a rehearsal, or create an issue at  <a href='https://github.com/owen-kellie-smith/chart2'>Github</a>.</p>";
+$form = "<p>Any bugs, please let Owen know at a rehearsal, or create an issue at  <a href='https://github.com/owen-kellie-smith/chart3'>Github</a>.</p>";
 $form .= "<p><a href='webcal://tsbchart.com/cal5.ics.php'>Subscribe to gig list as calendar</a></p>";
 $form .= "<p><a href='cal5.ics.php'>Get gig list as calendar events</a></p>";
 $form .= "<p><a href='.'>Main menu</a></p>";
