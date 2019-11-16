@@ -235,12 +235,12 @@ function getChartsForGigArray( $gigID = -1, $input=array()){
 	if (1==$includesAll){
 		$whereGig = "1 " ;
     		$orderHow = "V.name ASC";
-    		$sql = "SELECT DISTINCTROW 'unnecessary T.setListID', 'unnecessary T.setListOrder', V.name, V.arrangementID, CONCAT(V.name, ', ', V.arrangerFirstName, ' ', V.arrangerLastName), AC.arrCount, IF(AC.arrCount>1, CONCAT(V.name, ', ', V.arrangerFirstName, ' ', V.arrangerLastName), V.name), A.isBackedUp FROM view_arrangement AS V, (SELECT COUNT(*) as arrCount, songID FROM arrangement AS A GROUP BY songID) AS AC, arrangement AS A WHERE AC.songID = A.songID AND A.arrangementID = V.arrangementID AND " . $whereGig . " AND " . $whereFilter . " order by " . $orderHow;
+    		$sql = "SELECT  'unnecessary T.setListID', 'unnecessary T.setListOrder', V.name, V.arrangementID, CONCAT(V.name, ', ', V.arrangerFirstName, ' ', V.arrangerLastName), AC.arrCount, IF(AC.arrCount>1, CONCAT(V.name, ', ', V.arrangerFirstName, ' ', V.arrangerLastName), V.name), A.isBackedUp FROM view_arrangement AS V, (SELECT COUNT(*) as arrCount, songID FROM arrangement AS A GROUP BY songID) AS AC, arrangement AS A WHERE AC.songID = A.songID AND A.arrangementID = V.arrangementID AND " . $whereGig . " AND " . $whereFilter . " order by " . $orderHow;
 	} elseif (1==$hasWhere){
 		$whereGig = " V.arrangementID IN " . $this->arrInGigList($gigID) ;
 //		$whereGig = "T.gigID IN (SELECT gigID FROM gig WHERE " . $whereText . ") " ;
     		$orderHow = "V.name ASC";
-    $sql = "SELECT DISTINCTROW 'unnecessary T.setListID', 'unnecessary T.setListOrder', V.name, V.arrangementID, CONCAT(V.name, ', ', V.arrangerFirstName, ' ', V.arrangerLastName), AC.arrCount, IF(AC.arrCount>1, CONCAT(V.name, ', ', V.arrangerFirstName, ' ', V.arrangerLastName), V.name), A.isBackedUp, V.name FROM  view_arrangement AS V, (SELECT COUNT(*) as arrCount, songID FROM arrangement AS A GROUP BY songID) AS AC, arrangement AS A WHERE AC.songID = A.songID AND A.arrangementID = V.arrangementID  AND " . $whereGig . " AND " . $whereFilter . " order by " . $orderHow;
+    $sql = "SELECT  'unnecessary T.setListID', 'unnecessary T.setListOrder', V.name, V.arrangementID, CONCAT(V.name, ', ', V.arrangerFirstName, ' ', V.arrangerLastName), AC.arrCount, IF(AC.arrCount>1, CONCAT(V.name, ', ', V.arrangerFirstName, ' ', V.arrangerLastName), V.name), A.isBackedUp, V.name FROM  view_arrangement AS V, (SELECT COUNT(*) as arrCount, songID FROM arrangement AS A GROUP BY songID) AS AC, arrangement AS A WHERE AC.songID = A.songID AND A.arrangementID = V.arrangementID  AND " . $whereGig . " AND " . $whereFilter . " order by " . $orderHow;
 	} elseif (1==$isStyle){
 		$whereGig = "T.gigID = " . $gigID;
     		$orderHow = "V.name ASC";
@@ -250,7 +250,7 @@ function getChartsForGigArray( $gigID = -1, $input=array()){
 	}
 
 	if (1!=$includesAll && 1!=$hasWhere){
-    $sql = "SELECT DISTINCTROW 'unnecessary T.setListID', 'unnecessary T.setListOrder', V.name, V.arrangementID, CONCAT(V.name, ', ', V.arrangerFirstName, ' ', V.arrangerLastName), AC.arrCount, IF(AC.arrCount>1, CONCAT(V.name, ', ', V.arrangerFirstName, ' ', V.arrangerLastName), V.name), A.isBackedUp, V.name FROM setList2 AS T, view_arrangement AS V, (SELECT COUNT(*) as arrCount, songID FROM arrangement AS A GROUP BY songID) AS AC, arrangement AS A WHERE AC.songID = A.songID AND T.arrangementID=A.arrangementID AND A.arrangementID = V.arrangementID  AND " . $whereGig . " AND " . $whereFilter . " order by " . $orderHow;
+    $sql = "SELECT 'unnecessary T.setListID', 'unnecessary T.setListOrder', V.name, V.arrangementID, CONCAT(V.name, ', ', V.arrangerFirstName, ' ', V.arrangerLastName), AC.arrCount, IF(AC.arrCount>1, CONCAT(V.name, ', ', V.arrangerFirstName, ' ', V.arrangerLastName), V.name), A.isBackedUp, V.name FROM setList2 AS T, view_arrangement AS V, (SELECT COUNT(*) as arrCount, songID FROM arrangement AS A GROUP BY songID) AS AC, arrangement AS A WHERE AC.songID = A.songID AND T.arrangementID=A.arrangementID AND A.arrangementID = V.arrangementID  AND " . $whereGig . " AND " . $whereFilter . " order by " . $orderHow;
     }
 
  $i = 1;
@@ -342,7 +342,7 @@ $form = "<fieldset><legend>Delete set</legend><form action = '' method='POST'>";
 $form .= "<input type='hidden' name='action' value='deleteSetList' />";
 $form .= "<p><select name='gigID'>";
 
-$sql = "SELECT DISTINCT gigID, name, gigDate FROM gig ORDER BY gigDate DESC, name ASC";
+$sql = "SELECT  gigID, name, gigDate FROM gig ORDER BY gigDate DESC, name ASC";
 	$i = 1;
     	foreach( $this->conn->listMultiple( $sql ) AS $index=>$row ){
     	    if(11!=$row[0]){
@@ -400,7 +400,7 @@ $form = "<fieldset><legend>Get set to edit</legend><form action = '' method='GET
 $form .= "<input type='hidden' name='action' value='getSetList' />";
 $form .= "<p><select name='gigID'>";
 
-$sql = "SELECT DISTINCT gigID, name, gigDate FROM gig WHERE (hasWhere IS NULL OR hasWhere!=1) AND  (includesAll IS NULL OR includesAll!=1)  ORDER BY gigDate DESC, name ASC";
+$sql = "SELECT  gigID, name, gigDate FROM gig WHERE (hasWhere IS NULL OR hasWhere!=1) AND  (includesAll IS NULL OR includesAll!=1)  ORDER BY gigDate DESC, name ASC";
 	$i = 1;
     	foreach( $this->conn->listMultiple( $sql ) AS $index=>$row ){
     	    if(11!=$row[0]){
@@ -435,8 +435,8 @@ if (mysqli_connect_errno()) {
 } 
 $form = "";
 
-//$sql = "SELECT DISTINCT V.arrangementID, CONCAT(XYZ.partLabel, ' ', IF(AA.isInPads=1,'','*')), IF(AC.arrCount<2,V.songName,CONCAT(V.songName,', ',A.arrangerFirstName, ' ',A.arrangerLastName)) FROM arrangement AS AAA, (SELECT COUNT(*) AS arrCount, songID FROM arrangement GROUP BY songID) AS AC, view_efilePart AS V, view_arrangement AS A, arrangement AS AA, (SELECT XX.arrangementID, CONCAT('S',XX.count4, ' T',XX.count1,' B', XX.count2, ' R', XX.count5, ' V', XX.count6, ' C', XX.count9) as partLabel FROM (SELECT SUM(case when Csec.sectionID = 1 then Csec.countParts else 0 end) as count1, SUM(case when Csec.sectionID = 2 then Csec.countParts else 0 end) as count2, SUM(case when Csec.sectionID = 4 then Csec.countParts else 0 end) as count4, SUM(case when Csec.sectionID = 5 then Csec.countParts else 0 end) as count5, SUM(case when Csec.sectionID = 6 then Csec.countParts else 0 end) as count6, SUM(case when Csec.sectionID = 9 then Csec.countParts else 0 end) as count9, arrangementID FROM (SELECT count(*) as countParts, CC.arrangementID, CC.sectionID FROM (SELECT count(*) AS countAll, A.arrangementID, P.name as partName, S.sectionID as sectionID from efilePart as EF INNER JOIN efile as E on E.efileID = EF.efileID INNER JOIN publication as PUB on E.publicationID = PUB.publicationID INNER JOIN arrangement as A on A.arrangementID = PUB.arrangementID INNER JOIN part as P ON EF.partID = P.partID inner join section as S on S.sectionID = P.minSectionID GROUP BY A.arrangementID, S.sectionID, P.name) AS CC GROUP BY CC.arrangementID, CC.sectionID) as Csec GROUP BY arrangementID) AS XX) AS XYZ WHERE A.arrangementID=V.arrangementID AND AA.arrangementID=A.arrangementID AND A.arrangementID=XYZ.arrangementID AND AAA.arrangementID=A.arrangementID AND AC.songID=AAA.songID ORDER BY V.songName ASC";
-$sql = "SELECT DISTINCT V.arrangementID, CONCAT('', ' ', IF(AA.isInPads=1,'','*')), IF(AC.arrCount<2,V.songName,CONCAT(V.songName,', ',A.arrangerFirstName, ' ',A.arrangerLastName)), V.songName FROM arrangement AS AAA, (SELECT COUNT(*) AS arrCount, songID FROM arrangement GROUP BY songID) AS AC, view_efilePart AS V, view_arrangement AS A, arrangement AS AA WHERE A.arrangementID=V.arrangementID AND AA.arrangementID=A.arrangementID AND  AAA.arrangementID=A.arrangementID AND AC.songID=AAA.songID ORDER BY " . $orderBy;
+$sql = "SELECT  V.arrangementID, CONCAT('', ' ', IF(AA.isInPads=1,'','*')), IF(AC.arrCount<2,V.songName,CONCAT(V.songName,', ',A.arrangerFirstName, ' ',A.arrangerLastName)), V.songName FROM arrangement AS AAA, (SELECT COUNT(*) AS arrCount, songID FROM arrangement GROUP BY songID) AS AC, (SELECT COUNT(*), arrangementID, songName FROM view_efilePart GROUP BY arrangementID, songName) AS V, view_arrangement AS A, arrangement AS AA WHERE A.arrangementID=V.arrangementID AND AA.arrangementID=A.arrangementID AND  AAA.arrangementID=A.arrangementID AND AC.songID=AAA.songID ORDER BY " . $orderBy;
+//echo $sql;
 $result = mysqli_query($link, $sql);
 if ($result){
     $form .= "<div>";
@@ -873,15 +873,13 @@ if (isset($partName)){
 	if (1==$hasWhere ){
 		$whereGig2 = " V.arrangementID IN " . $this->arrInGigList( $gigID) ;
 		$whereGig = " g.arrangementID IN " . $this->arrInGigList( $gigID) ;
-$sql = "SELECT DISTINCTROW 'unnecessary fileName', 'unuseded startPage', 'unused endPage', IFNULL(formatID,-1), 'unused setListOrder', IFNULL(partName,-1), V.name, V.arrangementID  FROM ( view_arrangement AS V )  LEFT JOIN (SELECT gigID, formatID, partName, arrangementID from view_efilePartSetList2 as g WHERE ( 0 " . $partWhere . " ) AND ( 0 OR " . $whereGig . " )) AS V2 ON V2.arrangementID = V.arrangementID WHERE ( 0 OR " . $whereGig2 . " ) AND " . $whereFilter . $orderByFile  . ";";
-    $sqlIncludeMusic= "SELECT DISTINCTROW fileName, startPage, endPage, formatID, 'unused setListOrder' FROM view_efilePart as g INNER JOIN view_arrangement AS V on V.arrangementID = g.arrangementID WHERE  ( 0 " . $partWhere . ") AND ( 0 OR " . $whereGig . " )   AND " . $whereFilter .  $orderByFile . ";";
+$sql = "SELECT  'unnecessary fileName', 'unuseded startPage', 'unused endPage', IFNULL(formatID,-1), 'unused setListOrder', IFNULL(partName,-1), V.name, V.arrangementID  FROM ( view_arrangement AS V )  LEFT JOIN (SELECT  formatID, partName, arrangementID, count(*) from view_efilePartSetList2 as g WHERE ( 0 " . $partWhere . " ) AND ( 0 OR " . $whereGig . " ) GROUP BY formatID, partName, arrangementID) AS V2 ON V2.arrangementID = V.arrangementID WHERE ( 0 OR " . $whereGig2 . " ) AND " . $whereFilter . $orderByFile  . ";";
+    $sqlIncludeMusic= "SELECT  fileName, startPage, endPage, formatID, 'unused setListOrder' FROM view_efilePart as g INNER JOIN view_arrangement AS V on V.arrangementID = g.arrangementID WHERE  ( 0 " . $partWhere . ") AND ( 0 OR " . $whereGig . " )   AND " . $whereFilter .  $orderByFile . ";";
         } else {
-$sql = "SELECT DISTINCTROW 'unnecessary fileName', 'unuseded startPage', 'unused endPage', IFNULL(formatID,-1), 'unused setListOrder', IFNULL(partName,-1), V.name, V.arrangementID  FROM (setList2 as g INNER JOIN view_arrangement AS V on V.arrangementID = g.arrangementID)  LEFT JOIN (SELECT gigID, formatID, partName, arrangementID from view_efilePartSetList2 as g WHERE ( 0 " . $partWhere . " ) AND ( 0 OR " . $whereGig . " )) AS V2 ON V2.arrangementID = g.arrangementID WHERE ( 0 OR " . $whereGig . " ) AND " . $whereFilter . $orderByFile  . ";";
-    $sqlIncludeMusic= "SELECT DISTINCTROW fileName, startPage, endPage, formatID, 'unused setListOrder' FROM view_efilePartSetList2 as g INNER JOIN view_arrangement AS V on V.arrangementID = g.arrangementID WHERE  ( 0 " . $partWhere . ") AND ( 0 OR " . $whereGig . " )   AND " . $whereFilter .  $orderByFile . ";";
+$sql = "SELECT  'unnecessary fileName', 'unuseded startPage', 'unused endPage', IFNULL(formatID,-1), 'unused setListOrder', IFNULL(partName,-1), V.name, V.arrangementID  FROM (setList2 as g INNER JOIN view_arrangement AS V on V.arrangementID = g.arrangementID)  LEFT JOIN (SELECT gigID, formatID, partName, arrangementID from view_efilePartSetList2 as g WHERE ( 0 " . $partWhere . " ) AND ( 0 OR " . $whereGig . " )) AS V2 ON V2.arrangementID = g.arrangementID WHERE ( 0 OR " . $whereGig . " ) AND " . $whereFilter . $orderByFile  . ";";
+    $sqlIncludeMusic= "SELECT fileName, startPage, endPage, formatID, 'unused setListOrder' FROM view_efilePartSetList2 as g INNER JOIN view_arrangement AS V on V.arrangementID = g.arrangementID WHERE  ( 0 " . $partWhere . ") AND ( 0 OR " . $whereGig . " )   AND " . $whereFilter .  $orderByFile . ";";
         }
 
-//echo $sql;
-//echo $sqlIncludeMusic;
  $i = 1;
     $return = "<p>" . $labelFilter . "</p>";
 
@@ -902,10 +900,6 @@ $pdf = new Fpdi\Fpdi();
 		}
             $pdf->Write(5,$row[1] . " " . $row[2] . "\n\n\n");
         }
-//:w
-//$sql = "SELECT DISTINCTROW 'unnecessary fileName', 'unuseded startPage', 'unused endPage', IFNULL(formatID,-1), 'unused setListOrder', IFNULL(partName,-1), V.name, V.arrangementID  FROM (setList2 as g INNER JOIN view_arrangement AS V on V.arrangementID = g.arrangementID)  LEFT JOIN (SELECT gigID, formatID, partName, arrangementID from view_efilePartSetList2 as g WHERE ( 0 " . $partWhere . " ) AND ( 0 OR " . $whereGig . " )) AS V2 ON V2.arrangementID = g.arrangementID WHERE ( 0 OR " . $whereGig . " ) AND " . $whereFilter . $orderByFile  . ";";
-
-//$sql = "SELECT DISTINCTROW 'unnecessary fileName', 'unuseded  startPage', 'unused endPage', g.formatID, 'unused setListOrder', partName, V.name, V.arrangementID FROM view_efilePartSetList2 as g INNER JOIN view_arrangement AS V on V.arrangementID = g.arrangementID WHERE  ( 0 " . $partWhere . ") AND ( 0 OR " . $whereGig . " )   AND " . $whereFilter .  $orderByFile . ";";
 
  	if (strlen($labelFilter) > 0 ){
 		$pdf->Write(5,$labelFilter);
@@ -931,7 +925,6 @@ $pdf = new Fpdi\Fpdi();
 $this->arrangement->getAllNotes($pdf, $arrange);
 
 if ($includeMusic){
-//    $sqlIncludeMusic= "SELECT DISTINCTROW fileName, startPage, endPage, formatID, 'unused setListOrder' FROM view_efilePartSetList2 as g INNER JOIN view_arrangement AS V on V.arrangementID = g.arrangementID WHERE  ( 0 " . $partWhere . ") AND ( 0 OR " . $whereGig . " )   AND " . $whereFilter .  $orderByFile . ";";
     foreach( $this->conn->listMultiple( $sqlIncludeMusic ) AS $index=>$row ){
 	$pdf->setSourceFile( $directoryBase .  "/" .  "pdf/" . $row[0]);
 	  $jj = 0;
