@@ -235,12 +235,12 @@ function getChartsForGigArray( $gigID = -1, $input=array()){
 	if (1==$includesAll){
 		$whereGig = "1 " ;
     		$orderHow = "V.name ASC";
-    		$sql = "SELECT  'unnecessary T.setListID', 'unnecessary T.setListOrder', V.name, V.arrangementID, CONCAT(V.name, ', ', V.arrangerFirstName, ' ', V.arrangerLastName), AC.arrCount, IF(AC.arrCount>1, CONCAT(V.name, ', ', V.arrangerFirstName, ' ', V.arrangerLastName), V.name), A.isBackedUp FROM view_arrangement AS V, (SELECT COUNT(*) as arrCount, songID FROM arrangement AS A GROUP BY songID) AS AC, arrangement AS A WHERE AC.songID = A.songID AND A.arrangementID = V.arrangementID AND " . $whereGig . " AND " . $whereFilter . " order by " . $orderHow;
+    		$sql = "SELECT  'unnecessary T.setListID', 'unnecessary T.setListOrder', V.name, V.arrangementID, CONCAT(V.name, ', ', V.arrangerFirstName, ' ', V.arrangerLastName), AC.arrCount, IF(AC.arrCount>1, CONCAT(V.name, ', ', V.arrangerFirstName, ' ', V.arrangerLastName), V.name), A.isBackedUp, V.name, A.isInPads FROM view_arrangement AS V, (SELECT COUNT(*) as arrCount, songID FROM arrangement AS A GROUP BY songID) AS AC, arrangement AS A WHERE AC.songID = A.songID AND A.arrangementID = V.arrangementID AND " . $whereGig . " AND " . $whereFilter . " order by " . $orderHow;
 	} elseif (1==$hasWhere){
 		$whereGig = " V.arrangementID IN " . $this->arrInGigList($gigID) ;
 //		$whereGig = "T.gigID IN (SELECT gigID FROM gig WHERE " . $whereText . ") " ;
     		$orderHow = "V.name ASC";
-    $sql = "SELECT  'unnecessary T.setListID', 'unnecessary T.setListOrder', V.name, V.arrangementID, CONCAT(V.name, ', ', V.arrangerFirstName, ' ', V.arrangerLastName), AC.arrCount, IF(AC.arrCount>1, CONCAT(V.name, ', ', V.arrangerFirstName, ' ', V.arrangerLastName), V.name), A.isBackedUp, V.name FROM  view_arrangement AS V, (SELECT COUNT(*) as arrCount, songID FROM arrangement AS A GROUP BY songID) AS AC, arrangement AS A WHERE AC.songID = A.songID AND A.arrangementID = V.arrangementID  AND " . $whereGig . " AND " . $whereFilter . " order by " . $orderHow;
+    $sql = "SELECT  'unnecessary T.setListID', 'unnecessary T.setListOrder', V.name, V.arrangementID, CONCAT(V.name, ', ', V.arrangerFirstName, ' ', V.arrangerLastName), AC.arrCount, IF(AC.arrCount>1, CONCAT(V.name, ', ', V.arrangerFirstName, ' ', V.arrangerLastName), V.name), A.isBackedUp, V.name, A.isInPads FROM  view_arrangement AS V, (SELECT COUNT(*) as arrCount, songID FROM arrangement AS A GROUP BY songID) AS AC, arrangement AS A WHERE AC.songID = A.songID AND A.arrangementID = V.arrangementID  AND " . $whereGig . " AND " . $whereFilter . " order by " . $orderHow;
 	} elseif (1==$isStyle){
 		$whereGig = "T.gigID = " . $gigID;
     		$orderHow = "V.name ASC";
@@ -250,7 +250,7 @@ function getChartsForGigArray( $gigID = -1, $input=array()){
 	}
 
 	if (1!=$includesAll && 1!=$hasWhere){
-    $sql = "SELECT 'unnecessary T.setListID', 'unnecessary T.setListOrder', V.name, V.arrangementID, CONCAT(V.name, ', ', V.arrangerFirstName, ' ', V.arrangerLastName), AC.arrCount, IF(AC.arrCount>1, CONCAT(V.name, ', ', V.arrangerFirstName, ' ', V.arrangerLastName), V.name), A.isBackedUp, V.name FROM setList2 AS T, view_arrangement AS V, (SELECT COUNT(*) as arrCount, songID FROM arrangement AS A GROUP BY songID) AS AC, arrangement AS A WHERE AC.songID = A.songID AND T.arrangementID=A.arrangementID AND A.arrangementID = V.arrangementID  AND " . $whereGig . " AND " . $whereFilter . " order by " . $orderHow;
+    $sql = "SELECT 'unnecessary T.setListID', 'unnecessary T.setListOrder', V.name, V.arrangementID, CONCAT(V.name, ', ', V.arrangerFirstName, ' ', V.arrangerLastName), AC.arrCount, IF(AC.arrCount>1, CONCAT(V.name, ', ', V.arrangerFirstName, ' ', V.arrangerLastName), V.name), A.isBackedUp, V.name, A.isInPads FROM setList2 AS T, view_arrangement AS V, (SELECT COUNT(*) as arrCount, songID FROM arrangement AS A GROUP BY songID) AS AC, arrangement AS A WHERE AC.songID = A.songID AND T.arrangementID=A.arrangementID AND A.arrangementID = V.arrangementID  AND " . $whereGig . " AND " . $whereFilter . " order by " . $orderHow;
     }
 
  $i = 1;
@@ -261,6 +261,7 @@ function getChartsForGigArray( $gigID = -1, $input=array()){
     foreach ($this->conn->listMultiple($sql) AS $count=>$res){
         $retlist = array();
 	$retlist['label'] = $res[6] ;
+	$retlist['inPads'] = $res[9] ;
 	$retlist['backup'] = $res[7] ;
 	$retlist['arrangementID'] = $res[3];
 	$ret['list'][] = $retlist;
@@ -274,9 +275,11 @@ function getChartsForGig( $gigID = -1, $input=array()){
     $return.= "<ol>";
     foreach ($ret['list'] AS $count=>$retlist){
         $label = $retlist['label'];
+        $labelPads = "*";
+        if( $retlist['inPads']) $labelPads = "";
         $label2 = "";
         if( !$retlist['backup']) $label2 .= " (no back-up)";
-        $check = "<a href='.?gigID=". $gigID . "&arrangementID=" . $retlist['arrangementID'] . "'>".$label . "</a>". " " . $this->getStyleLabelForArrangement( $retlist['arrangementID'] ) .  $label2 . $this->getFileLabelForArrangementGig( $retlist['arrangementID'], $gigID ) . $this->getUrlLabelForArrangementGig( $retlist['arrangementID'], $gigID ) . "\n" . " ";
+        $check = $labelPads . "<a href='.?gigID=". $gigID . "&arrangementID=" . $retlist['arrangementID'] . "'>".$label . "</a>". " " . $this->getStyleLabelForArrangement( $retlist['arrangementID'] ) .  $label2 . $this->getFileLabelForArrangementGig( $retlist['arrangementID'], $gigID ) . $this->getUrlLabelForArrangementGig( $retlist['arrangementID'], $gigID ) . "\n" . " ";
         $return .= "<li><p>" . $check . "</p></li>";
     }
     $return .= "</ol>";
