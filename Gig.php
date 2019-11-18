@@ -847,6 +847,7 @@ if (isset($partName)){
     	$hasWhere = $res[2];
     }
     
+    $whereFilterIndex = " 1  ";
     $whereFilter = " 1  ";
     $labelFilter = "";
     if (isset($input['filter'])){
@@ -857,6 +858,7 @@ if (isset($partName)){
 			$conj = " NOT IN ";
 		}
     		if (isset($input['filterGig'][$count])){
+			$whereFilterIndex .= " AND  V2.arrangementID " . $conj . $this->arrInGigList($input['filterGig'][$count]) ;
 			$whereFilter .= " AND  g.arrangementID " . $conj . $this->arrInGigList($input['filterGig'][$count]) ;
 			$labelFilter .= " AND " . $conj . " " . $this->getGigLabel($input['filterGig'][$count]) . " ";
 		}
@@ -876,10 +878,10 @@ if (isset($partName)){
 	if (1==$hasWhere ){
 		$whereGig2 = " V.arrangementID IN " . $this->arrInGigList( $gigID) ;
 		$whereGig = " g.arrangementID IN " . $this->arrInGigList( $gigID) ;
-$sql = "SELECT  'unnecessary fileName', 'unuseded startPage', 'unused endPage', IFNULL(formatID,-1), 'unused setListOrder', IFNULL(partName,-1), V.name, V.arrangementID  FROM ( view_arrangement AS V )  LEFT JOIN (SELECT  formatID, partName, arrangementID, count(*) from view_efilePart as g WHERE ( 0 " . $partWhere . " ) AND ( 0 OR " . $whereGig . " ) GROUP BY formatID, partName, arrangementID) AS V2 ON V2.arrangementID = V.arrangementID WHERE ( 0 OR " . $whereGig2 . " ) AND " . $whereFilter . $orderByFile  . ";";
+$sql = "SELECT  'unnecessary fileName', 'unuseded startPage', 'unused endPage', IFNULL(formatID,-1), 'unused setListOrder', IFNULL(partName,-1), V.name, V.arrangementID  FROM ( view_arrangement AS V )  LEFT JOIN (SELECT  formatID, partName, arrangementID, count(*) from view_efilePart as g WHERE ( 0 " . $partWhere . " ) AND ( 0 OR " . $whereGig . " ) GROUP BY formatID, partName, arrangementID) AS V2 ON V2.arrangementID = V.arrangementID WHERE ( 0 OR " . $whereGig2 . " ) AND " . $whereFilterIndex . $orderByFile  . ";";
     $sqlIncludeMusic= "SELECT  fileName, startPage, endPage, formatID, 'unused setListOrder' FROM view_efilePart as g INNER JOIN view_arrangement AS V on V.arrangementID = g.arrangementID WHERE  ( 0 " . $partWhere . ") AND ( 0 OR " . $whereGig . " )   AND " . $whereFilter .  $orderByFile . ";";
         } else {
-$sql = "SELECT  'unnecessary fileName', 'unuseded startPage', 'unused endPage', IFNULL(formatID,-1), 'unused setListOrder', IFNULL(partName,-1), V.name, V.arrangementID  FROM (setList2 as g INNER JOIN view_arrangement AS V on V.arrangementID = g.arrangementID)  LEFT JOIN (SELECT gigID, formatID, partName, arrangementID from view_efilePartSetList2 as g WHERE ( 0 " . $partWhere . " ) AND ( 0 OR " . $whereGig . " )) AS V2 ON V2.arrangementID = g.arrangementID WHERE ( 0 OR " . $whereGig . " ) AND " . $whereFilter . $orderByFile  . ";";
+$sql = "SELECT  'unnecessary fileName', 'unuseded startPage', 'unused endPage', IFNULL(formatID,-1), 'unused setListOrder', IFNULL(partName,-1), V.name, V.arrangementID  FROM (setList2 as g INNER JOIN view_arrangement AS V on V.arrangementID = g.arrangementID)  LEFT JOIN (SELECT gigID, formatID, partName, arrangementID from view_efilePartSetList2 as g WHERE ( 0 " . $partWhere . " ) AND ( 0 OR " . $whereGig . " )) AS V2 ON V2.arrangementID = g.arrangementID WHERE ( 0 OR " . $whereGig . " ) AND " . $whereFilterIndex . $orderByFile  . ";";
     $sqlIncludeMusic= "SELECT fileName, startPage, endPage, formatID, 'unused setListOrder' FROM view_efilePartSetList2 as g INNER JOIN view_arrangement AS V on V.arrangementID = g.arrangementID WHERE  ( 0 " . $partWhere . ") AND ( 0 OR " . $whereGig . " )   AND " . $whereFilter .  $orderByFile . ";";
         }
 
