@@ -12,6 +12,12 @@ private $arrangement;
         $this->arrangement = New Arrangement();
     }
 
+function sHeader( $input ){
+     return PDF_HEADER_MESSAGE;
+}
+
+
+
 function addToSet( $gigID, $order, $arrangementID){
     
     if ($arrangementID > 0 && $gigID > 0){
@@ -940,10 +946,16 @@ if ($includeMusic){
 			$pdf->AddPage();
 			$jj++;
 			$pdf->useImportedPage($tplIdx, 10, 10, 200);
+       			$pdf->setXY(5,1);
+       			$pdf->setFontSize(10);
+       			$pdf->Write(5,$this->sHeader($input) . " \n");
 		} else {
 			$pdf->AddPage('L');
 			$jj++;
 			$pdf->useImportedPage($tplIdx, 10, -2, 280);
+       			$pdf->setXY(5,1);
+       			$pdf->setFontSize(10);
+       			$pdf->Write(5,$this->sHeader($input) . " \n");
 		}
 		// use the imported page and place it at point 10,10 with a width of 200 mm
 	}

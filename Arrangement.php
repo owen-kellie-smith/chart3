@@ -10,6 +10,12 @@ private $conn;
         $this->conn = New Connection();
     }
 
+
+function sHeader( $input ){
+     return PDF_HEADER_MESSAGE;
+}
+
+
 function addNote($publicationID, $noteText){
     if ($publicationID > 0 && strlen($noteText) > 3){
         $sql = "INSERT INTO note(publicationID, noteText, noteDate) VALUES('" . $publicationID . "','". $noteText . "', NOW())";
@@ -1178,10 +1184,21 @@ if (isset($input['arrangement'])){
 			$pdf->AddPage();
 			$jj++;
 			$pdf->useImportedPage($tplIdx, 10, 10, 200);
+
+       			$pdf->setXY(5,1);
+       			$pdf->setFontSize(10);
+       			$pdf->Write(5,$this->sHeader($input) . " \n");
+
 		} else {
 			$pdf->AddPage('L');
 			$jj++;
 			$pdf->useImportedPage($tplIdx, 10, -2, 280);
+
+
+       			$pdf->setXY(5,1);
+       			$pdf->setFontSize(10);
+       			$pdf->Write(5,$this->sHeader($input) . " \n");
+
 		}
 	  }
           // pad out with empty pages
