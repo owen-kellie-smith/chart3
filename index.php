@@ -75,6 +75,8 @@ if (isset($_REQUEST['confirmation'])) {
 // if valid cookie, provide content
 // if no valid cookie, show disabled forms and offer means of authentication
 if ($user->hasValidCookie()){
+    echo "<p>You are logged in as " . $user->getUserEmail() . "</p>" ;
+    $render->getOutputLink( $arrangement->listAll($_GET['partID']) );
     $arrangementID = -1; $gigID = -1;
 	if (isset($_GET['arrangementID'])) {
         $arrangementID = $_GET['arrangementID'];

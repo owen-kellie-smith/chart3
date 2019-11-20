@@ -1,5 +1,16 @@
 <?php
 
+// Import PHPMailer classes into the global namespace
+// These must be at the top of your script, not inside a function
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+
+// Load Composer's autoloader
+require 'vendor/autoload.php';
+require 'mysql-cred.php';
+
+
 class User
 {
 
@@ -9,6 +20,52 @@ private $conn;
         $this->conn = New Connection();
     }
 
+function getUserEmail(){
+     if (isset ($_COOKIE['tsbemail'])){
+         $sRet = $this->decrypt($_COOKIE['tsbemail']);
+     } else { 
+         $sRet = "No email found";
+	 }
+	 return $sRet;
+}
+
+
+function sendAttachment( $toAddress, $filePath, $newFileName,  $subject, $body, $altBody, $deleteAFterSending){
+// Instantiation and passing `true` enables exceptions
+$ret = array();
+$mail = new PHPMailer(true);
+
+try {
+    //Server settings
+    $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      // Enable verbose debug output
+
+
+    //Recipients
+    $mail->setFrom(EMAIL_FROM_ADDRESS, EMAIL_FROM_ALT);
+    $mail->addAddress($toAddress);     // Add a recipient
+
+    // Attachments
+    $mail->addAttachment($filePath, $newFileName);
+
+
+    // Content
+    $mail->isHTML(false);                                  // Set email format to HTML
+    $mail->Subject = $subject;
+    $mail->Body    = $body;
+    $mail->AltBody = $altBody;
+
+    $mail->send();
+    if ($deleteAFterSending){
+        unlink($filePath);
+    }
+    $ret['status'] = true;
+    $ret['message'] = 'Message has been sent';
+} catch (Exception $e) {
+    $ret['status'] = false;
+    $ret['message'] =  "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+}
+return $ret;
+}
 
 function addToCookieArray( $newValue, $expiry ){
 	$oldarray = array();
@@ -45,7 +102,7 @@ $form .= "<div id='honey'>Leave this blank (really)
 	  </div>";
 $form .= "<input type='hidden' name='action' value='storeEmail'>";
 $form .= "<p><input type='submit' value='submit'></p></form>";
-$form .= "<p>To get a confirmation code to enable you to use the chart printer please enter your email and hit submit.  The confirmation code will store a cookie on your computer that gives you access.  You can remove the cookie but then you'll need to enter your email again.  If your email isn't recognised, please let us know at a rehearsal.</p>";
+$form .= "<p>To get a confirmation code to enable you to use the chart printer please enter your email and hit submit.  The confirmation code will store cookies on your computer that encrypt your email and give you access.  The pdf you download will have your email on them.  You can remove the cookies but then you'll need to enter your email again.  If your email isn't recognised, please tell Owen.</p>";
 return $form;
 }
 
@@ -171,6 +228,9 @@ foreach( $this->conn->listMultiple( $sql ) AS $index=>$row ){
 		$breturn = true;
 	}
 }
+if ($breturn){
+        $breturn = $this->isCookieForEmail( $cookie,  $this->getUserEmail());
+}
 
 return $breturn;
 }
@@ -205,8 +265,26 @@ if ($result){
 
 }
 
+function encrypt($plainText){
+
+    $c = openssl_encrypt($plainText, "AES-128-ECB", E_KEY) ;
+    return $c;
+
+}
+
+function decrypt($c){
+    $o = openssl_decrypt($c, "AES-128-ECB", E_KEY);
+    return $o;
+}
+
+
 function setTSBcookie( $value, $expiry ){
 	setcookie("tsbcode", $value, $expiry);
+}
+
+function setTSBcookieEmail( $value, $expiry ){
+	setcookie("tsbemail", "", -3600);
+	setcookie("tsbemail", $value, $expiry);
 }
 
 function setTSBcookieArray( $value, $expiry ){
@@ -260,6 +338,7 @@ function storeEmail( $input = array()){
     foreach($this->conn->listMultiple( $sql ) AS $index=>$row ){
 		if ($row[0] > 0) {
 			$this->sendCode( $email );
+	                $this->setTSBcookieEmail( $this->encrypt( $email ), time() + 365 * 24 * 60 * 60 );
 			return true;
 		} else {
 			$this->sendAdminDudEmail( $email );
