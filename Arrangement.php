@@ -207,14 +207,12 @@ $sql = "SELECT G.name, C.countStyle, G.gigID FROM gig as G LEFT  JOIN (SELECT Co
 
 function getArrangementLabel( $arrangementID ){
 $sql = "SELECT VA.name, VA.arrangerFirstName, VA.arrangerLastName FROM view_arrangement AS VA WHERE VA.arrangementID=" . $arrangementID ;
+//echo $sql;
 $result = mysqli_query($link, $sql);
 // echo $sql;
 $songName = "NOT FOUND";
-if ($result){
-	$i = 1;
-    	while($row = mysqli_fetch_row( $result )) {
+foreach( $this->conn->listMultiple( $sql ) AS $index=>$row ){
 		$songName = $row[0] ." arranged by " . $row[1] . " " .$row[2];
-    	}
 }
 
 
