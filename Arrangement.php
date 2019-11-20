@@ -203,6 +203,28 @@ $sql = "SELECT G.name, C.countStyle, G.gigID FROM gig as G LEFT  JOIN (SELECT Co
 	return $form;
 }
 
+
+
+function getArrangementLabel( $arrangementID ){
+$sql = "SELECT VA.name, VA.arrangerFirstName, VA.arrangerLastName FROM view_arrangement AS VA WHERE VA.arrangementID=" . $arrangementID ;
+$result = mysqli_query($link, $sql);
+// echo $sql;
+$songName = "NOT FOUND";
+if ($result){
+	$i = 1;
+    	while($row = mysqli_fetch_row( $result )) {
+		$songName = $row[0] ." arranged by " . $row[1] . " " .$row[2];
+    	}
+}
+
+
+return $songName;
+}
+
+
+
+
+
 function getArrangementForm( $arrangementID){
 
 $form = "";
@@ -1226,6 +1248,19 @@ $this->conn->saveRequest($input);
 $yourFile =  'output/'. md5(time()) . 'myfile.pdf';
 $pdf->Output(getcwd() . "/" . $yourFile,'F');
 return $yourFile;
+}
+
+function sendAllParts( $arrangementID ){
+
+     $txt = "TSB: " . $this->getArrangementLabel($arrangementID);
+     $input=array();
+     $input['allParts'] = true;
+     $input['noPad'] = true;
+     $input['arrangement'] = array(0=>$arrangementID);
+
+     $ret = $this->userX->sendAttachment( $this->userX->getUserEmail(), $this->pdfFromGet( $input ), $arrangementID . ".pdf",  $txt, $txt, $txt, true);
+	echo $ret['message'];
+
 }
 
 function postStyle( $input ){
