@@ -5,14 +5,16 @@ use \setasign\Fpdi;
 class Arrangement{
 
 private $conn;
+private $userX;
 
     function __construct() {
         $this->conn = New Connection();
+        $this->userX = New User();
     }
 
 
 function sHeader( $input ){
-     return PDF_HEADER_MESSAGE;
+     return PDF_HEADER_MESSAGE . " " . $this->userX->getUserEmail();
 }
 
 

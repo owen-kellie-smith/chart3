@@ -13,7 +13,7 @@ private $arrangement;
     }
 
 function sHeader( $input ){
-     return PDF_HEADER_MESSAGE;
+     return $this->arrangement->sHeader($input);
 }
 
 
