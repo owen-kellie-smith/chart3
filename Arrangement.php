@@ -1249,7 +1249,7 @@ return $yourFile;
 }
 
 function sendAllParts( $arrangementID ){
-
+if ($this->userX->hasValidCookie()){
      $txt = "TSB: " . $this->getArrangementLabel($arrangementID);
      $input=array();
      $input['allParts'] = true;
@@ -1258,6 +1258,9 @@ function sendAllParts( $arrangementID ){
 
      $ret = $this->userX->sendAttachment( $this->userX->getUserEmail(), $this->pdfFromGet( $input ), $arrangementID . ".pdf",  $txt, $txt, $txt, true);
 	echo $ret['message'];
+	} else {
+	echo "login first.";
+	}
 
 }
 
