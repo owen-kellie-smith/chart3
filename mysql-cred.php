@@ -6,9 +6,4 @@
 
 
 
-define("EMAIL_FROM_ADDRESS","someone@somewhere.net");
-define("EMAIL_FROM_ALT","Site domain");
-define("E_KEY","SomeComplicatedKey123");
-
-define("PDF_HEADER_MESSAGE","Some text to put at the top of each pdf");
 
