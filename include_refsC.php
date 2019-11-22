@@ -12,10 +12,10 @@ define("E_KEY","SomeComplicatedKey123");
 define("PDF_HEADER_MESSAGE","Some text to put at the top of each pdf");
 
 define ('SITE_ROOT', realpath(dirname(__FILE__)));
-require_once "Arrangement.php";
 require_once "Connection.php";
 require_once "Gig.php";
 require_once "myListAllPDF.php";
 require_once "Render.php";
 require_once "User.php";
 
+require_once "Arrangement.php";

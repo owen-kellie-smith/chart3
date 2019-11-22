@@ -14,7 +14,11 @@ private $userX;
 
 
 function sHeader( $input ){
-     return PDF_HEADER_MESSAGE . " " . $this->userX->getUserEmail();
+     $header = "";
+     if (isset($input['header'])){
+         $header = htmlentities($input['header']);
+      }
+     return PDF_HEADER_MESSAGE . " " . $this->userX->getUserEmail() . " " . $header ;
 }
 
 
