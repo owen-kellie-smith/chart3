@@ -102,7 +102,7 @@ $form .= "<div id='honey'>Leave this blank (really)
 	  </div>";
 $form .= "<input type='hidden' name='action' value='storeEmail'>";
 $form .= "<p><input type='submit' value='submit'></p></form>";
-$form .= "<p>To get a confirmation code to enable you to use the chart printer please enter your email and hit submit.  The confirmation code will store cookies on your computer that encrypt your email and give you access.  The pdf you download will have your email on them.  You can remove the cookies but then you'll need to enter your email again. If you end up in a loop try deleing all your cookies.   If your email isn't recognised, please tell Owen.</p>";
+$form .= "<p>To get a confirmation code to enable you to use the chart printer please enter your email and hit submit.  The confirmation code will store cookies on your computer that encrypt your email and give you access.  The pdf you download will have your email on them.  You can remove the cookies but then you'll need to enter your email again. If you end up in a loop try deleting all your cookies and all your browser history and cache.   If your email isn't recognised, please tell Owen.</p>";
 return $form;
 }
 
