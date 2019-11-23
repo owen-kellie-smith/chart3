@@ -822,6 +822,7 @@ if (isset($input['gigID']) && isset($input['part'])){
 
 private function pdfFromGigExplicit($input, $directoryBase, $outputStem=''){
 
+try{
     $gigID = $input['gigID'];
     $partName = $input['part'];
 if (isset($input['includeFiller'])){
@@ -984,6 +985,9 @@ $pdf->Write(5,"\n(music excluded)\n");
 $yourFile =  'output/'. $outputStem . md5(time()) . 'myfile.pdf';
 $pdf->Output($directoryBase . "/" . $yourFile,'F');            
 return $yourFile;
+} catch(Exception $e) {
+echo "Error! Pdf will probably be junk or not exist.  Error message is: " . $e->getMessage();
+}
 }
 
 

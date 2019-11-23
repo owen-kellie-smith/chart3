@@ -1151,6 +1151,11 @@ function numPages($filename){
 
 
 function pdfFromGet( $input){
+    try {
+
+
+
+
 
 $where=" OR V.efileID=-999 ";
 $partWhere=" OR V.partID=-999 ";
@@ -1250,9 +1255,14 @@ $this->conn->saveRequest($input);
 $yourFile =  'output/'. md5(time()) . 'myfile.pdf';
 $pdf->Output(getcwd() . "/" . $yourFile,'F');
 return $yourFile;
+    }
+    catch(Exception $e) {
+echo "Error! Pdf will probably be junk or not exist.  Error message is: " . $e->getMessage();
+}
 }
 
 function sendAllParts( $arrangementID ){
+try{
 if ($this->userX->hasValidCookie()){
      $txt = "TSB: " . $this->getArrangementLabel($arrangementID);
      $input=array();
@@ -1265,7 +1275,9 @@ if ($this->userX->hasValidCookie()){
 	} else {
 	echo "login first.";
 	}
-
+} catch(Exception $e) {
+echo "Error!  Error message is: " . $e->getMessage();
+}
 }
 
 function postStyle( $input ){
