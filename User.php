@@ -180,6 +180,7 @@ function hasValidCookie(){
 if (ALL_USERS_ARE_ADMINS == 'All') return true;
 $breturn = false;
 if (!isset($_COOKIE['tsbcode'])){
+        echo "No tsbcode cookie";
 	return false;
 }
 $breturn = $this->isrecognisedip( $_COOKIE['tsbcode'] );
@@ -189,6 +190,9 @@ $breturn = $this->isrecognisedip( $_COOKIE['tsbcode'] );
 			$breturn = $breturn || $this->isrecognisedip( $ckie );
 		}
 	}
+if (!$breturn){
+      echo "no recognised tscbode or tsbcodearray cookies";
+}
 return $breturn;
 }
 
@@ -202,6 +206,9 @@ foreach( $this->conn->listMultiple( $sql ) AS $index=>$row ){
 		$breturn = true;
 	}
 }
+if (!($breturn)){
+    echo "confirmation cookie doesn't match email cookie.  Make sure you confirm in the same browser that you used to enter your email.";
+    }
 
 return $breturn;
 }
