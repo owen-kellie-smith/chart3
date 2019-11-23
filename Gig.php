@@ -114,6 +114,7 @@ function deleteSetListPart( $setListID){
 }
 
 function getUrlsForArrangementGig( $arrangementID, $gigID ){
+        $ret = array();
 	$sql = "SELECT urlurl, urlTSB, urlTitle, urlTypeName FROM url INNER JOIN urlType ON url.urlTypeID = urlType.urlTypeID  WHERE urlGigID=" . $gigID . " AND urlArrangementID = " . $arrangementID ;
     	foreach ($this->conn->listMultiple($sql) AS $count=>$res){
 		$ret[] = $res;
@@ -122,6 +123,7 @@ function getUrlsForArrangementGig( $arrangementID, $gigID ){
 }
 
 function getFilesForArrangementGig( $arrangementID, $gigID ){
+        $ret = array();
 	$sql = "SELECT name, efileID FROM efile WHERE gigID=" . $gigID . " AND arrangementID = " . $arrangementID ;
     	foreach ($this->conn->listMultiple($sql) AS $count=>$res){
 		$ret[] = $res;
@@ -130,6 +132,7 @@ function getFilesForArrangementGig( $arrangementID, $gigID ){
 }
 
 function getStylesForArrangement( $arrangementID ){
+        $ret = array();
 	$sql = "SELECT name, gigID from gig WHERE isStyle=1 AND gigID IN (SELECT gigID FROM setList2 WHERE arrangementID = " . $arrangementID . ")";
     	foreach ($this->conn->listMultiple($sql) AS $count=>$res){
 		$ret[] = $res;
