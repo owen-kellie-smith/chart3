@@ -1,6 +1,7 @@
 <?php
 require_once("Gig.php");
 require_once("Connection.php");
+require_once("User.php");
 require_once("Arrangement.php");
 
   function timeToCal($timestamp) {
