@@ -486,13 +486,14 @@ return $form;
 
 function getEditNoteForm( $input=array()){
 $where = " AND 1 ";
+$form = "";
 if (isset($input['arrangementID'])){
 	if ($input['arrangementID'] > 0){
 		$where .= " AND V.arrangementID = " . $input['arrangementID'] . " ";
+		$form = "<p><a href='../?arrangementID=" . $input['arrangementID'] . "'>" . $this->getArrangementLabel($input['arrangementID']). "</a></p>";
 	}
 }
 
-$form = "";
 $sqlCharts = "SELECT N.noteID, V.name, V.description, N.noteText, date_format(N.noteDate, '%Y-%m-%d'), N.publicationID FROM note as N, view_publication as V WHERE V.publicationID=N.publicationID " . $where . " ORDER BY name ASC, noteDate DESC"; 
     	foreach( $this->conn->listMultiple( $sqlCharts ) AS $index=>$row ){
             $form .= "<div>";
