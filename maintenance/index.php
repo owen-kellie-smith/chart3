@@ -27,6 +27,10 @@ if ($user->hasAdminCookie()){
         $arrangement->deleteFile($_POST['fileNameExclPath']);
     }
 
+    if ('deleteArrangement'==$_POST['action'] && isset( $_POST['arrangementID'])){
+        $arrangement->deleteArrangement($_POST['arrangementID']);
+    }
+
     if ('deleteEfile'==$_POST['action'] && isset( $_POST['efileID'])){
         $arrangement->deleteEfile($_POST['efileID']);
     }

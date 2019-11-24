@@ -98,6 +98,12 @@ function deleteURL($input){
 }
 
 
+function deleteArrangement($arrangementID){
+		$sql = "DELETE FROM arrangement WHERE arrangementID=" . $arrangementID;
+        	$result = $this->conn->my_execute( $sql);
+}
+
+
 function deleteEfile($efileID){
 		$sql = "DELETE FROM efile WHERE efileID=" . $efileID;
         	$result = $this->conn->my_execute( $sql);
@@ -835,7 +841,7 @@ return $form;
 
 function getSongs(){
 
-$sql = "SELECT S.name, A.arrangementID, A.isInPads, CONCAT(S.Name, ' ', P.firstName, ' ', P.lastName) as ArrLabel, A.isBackedUp from song AS S LEFT JOIN ( arrangement as A INNER JOIN person as P ON A.arrangerPersonID = P.personID)  ON A.songID = S.songID order by S.name  ASC";
+$sql = "SELECT S.name, A.arrangementID, A.isInPads, CONCAT(S.Name, ' ', P.firstName, ' ', P.lastName) as ArrLabel, A.isBackedUp from song AS S INNER JOIN ( arrangement as A INNER JOIN person as P ON A.arrangerPersonID = P.personID)  ON A.songID = S.songID order by S.name  ASC";
 $return = "<ol> \n ";
 //$return = "<table> \n <tr><th>Pads<th>Back-up<th>Name</tr> \n";
     	foreach( $this->conn->listMultiple( $sql ) AS $index=>$row ){
@@ -1073,6 +1079,22 @@ foreach ($this->listPdfUnlisted( $path ) as $key=>$filename){
     
 }
 $echo .=  "</fieldset>";
+
+
+$echo .=  "<fieldset><legend>Arrangements with no media</legend>";
+foreach ($this->listArrangementWithNoMedia() as $key=>$row){
+    $echo .=  "<form action='' method='post'>";
+    $echo .=  "<input type='submit' value='delete " . $this->getArrangementLabel($row['arrangementID']) . "' ><input type='hidden' name='action' value='deleteArrangement'>";
+    $echo .=  "<input type='hidden' name='arrangementID' value='" . $row['arrangementID'] . "'>";
+    $echo .=  "</form></p>";
+    
+}
+$echo .=  "</fieldset>";
+
+
+
+
+
 $echo .=  "<fieldset><legend>Paired with no parts</legend>";
 foreach ($this->listPdfWithNoParts() as $key=>$row){
     $echo .= "<p><a href='" . $path . "/" . $row['filename'] . "'>" . $row['chart']  . " " . $row['filename'] . "</a> \n\n";
@@ -1085,6 +1107,22 @@ foreach ($this->listPdfWithNoParts() as $key=>$row){
 $echo .=  "</fieldset>";
 return $echo;
 }
+
+
+
+function listArrangementWithNoMedia(){
+	$sql = "SELECT A.arrangementID, A.name FROM view_arrangement as A where A.arrangementID NOT IN ( SELECT arrangementID FROM view_efile)  AND A.arrangementID NOT IN (SELECT urlArrangementID FROM url) AND A.arrangementID NOT IN (SELECT arrangementID FROM setList2) ORDER BY A.name ASC";
+	$ret = array();
+    	foreach( $this->conn->listMultiple( $sql ) AS $index=>$row ){
+		$red1 = array();
+		$red1['arrangementID'] = $row[0];
+		$red1['label'] = $row[1];
+		$ret[] = $red1;
+		}
+
+	return $ret;
+}
+
 
 function listPdfWithNoParts(){
 	$sql = "SELECT E.name,  V.name, E.efileID from efile as E INNER JOIN view_publication as V ON V.publicationID=E.publicationID WHERE efileID NOT IN (SELECT efileID from efilePart) ORDER BY V.name ASC";
