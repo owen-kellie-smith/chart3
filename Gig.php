@@ -818,7 +818,7 @@ if (isset($input['includeMusic'])){
 */
 if (isset($input['gigID']) && isset($input['part'])){
     $this->deleteOutput( getcwd() );
-    $this->conn->saveRequest($input);    
+//    $this->conn->saveRequest($input);    
     return $this->pdfFromGigExplicit($input, getcwd() );
 }
 }

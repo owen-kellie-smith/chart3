@@ -1290,7 +1290,7 @@ if (isset($input['arrangement'])){
 	  } // end if $padding
 
         }
-$this->conn->saveRequest($input);
+//$this->conn->saveRequest($input);
 $yourFile =  'output/'. md5(time()) . 'myfile.pdf';
 $pdf->Output(getcwd() . "/" . $yourFile,'F');
 return $yourFile;
