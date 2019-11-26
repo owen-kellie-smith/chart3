@@ -34,6 +34,12 @@ function getOutputLink( $filename ){
 	$out = "";
 	$out .= "<fieldset><legend>Your requested  charts</legend>";
 	$out .= "<a href='" . $filename . "'>Download your pdf</a>";
+	$out .= "<form action='' method='POST'>";
+//	$out .= "<form action='' method='GET'>";
+	$out .= "<input type='hidden' name='fileToSend' value='" . $filename . "' >";
+	$out .= "<input type='hidden' name='action' value='emailFile' >";
+	$out .= "<input type='submit' value='Email the file' >";
+	$out .= "</form>";
 	$out .= "</fieldset>";
 	return $out;
 	}

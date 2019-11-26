@@ -30,6 +30,23 @@ function getUserEmail(){
 }
 
 
+function sendPlainFileAndDeleteIt( $sourceFile ){
+
+try{
+if ($this->hasValidCookie()){
+     echo "Trying to email: " . $sourceFile . "\r\n <br />";
+     $txt = "TSB: " . basename($sourceFile);
+     $ret = $this->sendAttachment( $this->getUserEmail(), $sourceFile, basename($sourceFile),  $txt, $txt, $txt, true);
+	echo $ret['message'];
+	} else {
+	echo "login first.";
+	}
+} catch(Exception $e) {
+echo "Error!  Error message is: " . $e->getMessage();
+}
+}
+
+
 function sendAttachment( $toAddress, $filePath, $newFileName,  $subject, $body, $altBody, $deleteAFterSending){
 // Instantiation and passing `true` enables exceptions
 $ret = array();
