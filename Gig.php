@@ -436,9 +436,15 @@ include "mysql-cred.php";
 if (isset($input['byDate'])){
    $orderBy = " V.arrangementID DESC ";
    $orderLabel = "Newest at the top";
+   $chartLabel = " IF(AC.arrCount<2,V.songName,CONCAT(V.songName,', ',A.arrangerFirstName, ' ',A.arrangerLastName)) ";
+} elseif (isset($input['byArranger'])){
+   $orderBy = " A.arrangerLastName ASC, A.arrangerFirstName ASC, V.songName ASC ";
+   $chartLabel = " CONCAT(A.arrangerLastName,', ',A.arrangerFirstName,': ',V.songName) ";
+   $orderLabel = "Ordered by arranger";
 } else {
    $orderBy = " V.songName ASC ";
    $orderLabel = "Alphabetical order";
+   $chartLabel = " IF(AC.arrCount<2,V.songName,CONCAT(V.songName,', ',A.arrangerFirstName, ' ',A.arrangerLastName)) ";
 }
 
 $link  = mysqli_connect( $servername, $username, $password, $database);
@@ -447,7 +453,7 @@ if (mysqli_connect_errno()) {
 } 
 $form = "";
 
-$sql = "SELECT  V.arrangementID, CONCAT('', ' ', IF(AA.isInPads=1,'','*')), IF(AC.arrCount<2,V.songName,CONCAT(V.songName,', ',A.arrangerFirstName, ' ',A.arrangerLastName)), V.songName FROM arrangement AS AAA, (SELECT COUNT(*) AS arrCount, songID FROM arrangement GROUP BY songID) AS AC, (SELECT COUNT(*), arrangementID, songName FROM view_efilePart GROUP BY arrangementID, songName) AS V, view_arrangement AS A, arrangement AS AA WHERE A.arrangementID=V.arrangementID AND AA.arrangementID=A.arrangementID AND  AAA.arrangementID=A.arrangementID AND AC.songID=AAA.songID ORDER BY " . $orderBy;
+$sql = "SELECT  V.arrangementID, CONCAT('', ' ', IF(AA.isInPads=1,'','*')), " . $chartLabel . " , V.songName FROM arrangement AS AAA, (SELECT COUNT(*) AS arrCount, songID FROM arrangement GROUP BY songID) AS AC, (SELECT COUNT(*), arrangementID, songName FROM view_efilePart GROUP BY arrangementID, songName) AS V, view_arrangement AS A, arrangement AS AA WHERE A.arrangementID=V.arrangementID AND AA.arrangementID=A.arrangementID AND  AAA.arrangementID=A.arrangementID AND AC.songID=AAA.songID ORDER BY " . $orderBy;
 //echo $sql;
 $result = mysqli_query($link, $sql);
 if ($result){
@@ -465,7 +471,11 @@ if ($result){
 		$form = $form . $check;
     	}
     $form .= "</ol>";
-    $form .= "<p><a href=./?byDate>Order by date uploaded</a></p>";
+    $form .= "<p>Order by ";
+    $form .= "<a href=./>title</a> ";
+    $form .= "<a href=./?byDate>date uploaded</a> ";
+    $form .= "<a href=./?byArranger>arranger</a> ";
+    $form .= "</p>";
     $form .= "</div>";
 
 }
