@@ -13,7 +13,12 @@ if (isset($_POST['action'])){
     if ('updateStyle'==$_POST['action']){
             $arrangement->postStyle($_POST);
     }
-
+    if ('emailFile'==$_POST['action']){
+        if (isset($_POST['fileToSend'])){
+            $user->sendPlainFileAndDeleteIt($_POST['fileToSend']);
+	    exit();
+        }
+    }
 }
 header("Cache-Control: no-store, no-cache, must-revalidate"); // HTTP/1.1
 header("Cache-Control: post-check=0, pre-check=0", false);
@@ -67,6 +72,11 @@ if (isset($_REQUEST['confirmation'])) {
       <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
          <head>
           <title>TSB Printer</title>
+	  <meta name="robots" content="noindex" />
+	  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	  <link rel="manifest" href="/site.webmanifest">
 	  <link rel="stylesheet" type="text/css" href="mystyle.css">
         </head>
         <body>

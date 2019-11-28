@@ -218,6 +218,8 @@ $sql = "SELECT G.name, C.countStyle, G.gigID FROM gig as G LEFT  JOIN (SELECT Co
 function getArrangementLabel( $arrangementID ){
 $sql = "SELECT VA.name, VA.arrangerFirstName, VA.arrangerLastName FROM view_arrangement AS VA WHERE VA.arrangementID=" . $arrangementID ;
 //echo $sql;
+include "mysql-cred.php";
+$link  = mysqli_connect( $servername, $username, $password, $database);
 $result = mysqli_query($link, $sql);
 // echo $sql;
 $songName = "NOT FOUND";
@@ -1248,6 +1250,11 @@ if (isset($input['arrangement'])){
     	foreach( $this->conn->listMultiple( $sql ) AS $index=>$row ){
 	  $pdf->setSourceFile("pdf/" . $row[0]);
 	  $jj = 0;
+	  // https://stackoverflow.com/questions/2318858/how-to-recover-from-a-fatal-error-allowed-memory-size-exhausted?noredirect=1&lq=1
+	  if((memory_get_usage() / 1024 /1024) > 30){
+	       // throw a "too much memory" error
+	       throw new Exception('Memory will probably overload. Memory allocated to script is ' . memory_get_usage() / 1024 / 1024 . "Mb");
+	  }
 	  for ($i = $row[1], $ii = $row[2]; $i <= $ii; $i++){
 		$tplIdx = $pdf->importPage($i);
 		if (0 == $row[3]){

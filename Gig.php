@@ -582,7 +582,7 @@ mysqli_close( $link );
 $form .= "<input type = 'checkbox' name='includeMusic' value='include' checked>Include Music";
 $form .= $this->getHidden($input, 'filter','filterGig');
 $form .= "<input type = 'checkbox' name='includeFiller' value='include' checked>Pad music with blank pages to print on A3";
-$form .= "<input type='submit' value='Get pdf of whole set'></form>";
+$form .= "<input type='submit' value='Get pdf of whole set (" . $this->getGigLabel($gigID) . $this->getFilterLabel($input) . ")'></form>";
 if ($gigID > 0){
 	$form .= "<p><a href=./maintenance/?action=getSetList&gigID=" . $gigID . ">Edit set  list</a></p>";
 }
@@ -593,6 +593,25 @@ if ($gigID > 0){
 return $out;
     
 }
+
+
+function getFilterLabel( $input ){
+  $sRet = "";
+  if (isset($input['filter']) && isset($input['filterGig'])){
+     for ($i = 0, $ii = count($input['filter']); $i < $ii; $i++){
+     //  assume length of filter = length of filterGig
+        if ($input['filter'][$i]==1){
+	    $sRet .= " AND ALSO IN ";
+	} else {
+	    $sRet .= " BUT NOT IN ";
+	}
+	$sRet .= $this->getGigLabel( $input['filterGig'][$i]);
+     }
+  }
+  return $sRet;
+
+}
+
 
 
 function getGigLabel( $gigID){
@@ -834,7 +853,6 @@ if (isset($input['gigID']) && isset($input['part'])){
 }
 
 private function pdfFromGigExplicit($input, $directoryBase, $outputStem=''){
-
 try{
     $gigID = $input['gigID'];
     $partName = $input['part'];
@@ -952,6 +970,17 @@ $this->arrangement->getAllNotes($pdf, $arrange);
 
 if ($includeMusic){
     foreach( $this->conn->listMultiple( $sqlIncludeMusic ) AS $index=>$row ){
+
+
+	  if((memory_get_usage() / 1024 /1024) > 9){
+	       // throw a "too much memory" error
+               echo "<pre>";
+                debug_print_backtrace();
+               echo "</pre>";
+	       throw new Exception('Memory will probably overload. Memory allocated to script is ' . memory_get_usage() / 1024 / 1024 . "Mb");
+	  }
+
+
 	$pdf->setSourceFile( $directoryBase .  "/" .  "pdf/" . $row[0]);
 	  $jj = 0;
 	for ($i = $row[1], $ii = $row[2]; $i <= $ii; $i++){
