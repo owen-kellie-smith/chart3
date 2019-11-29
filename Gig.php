@@ -287,7 +287,7 @@ function getChartsForGig( $gigID = -1, $input=array()){
         $labelPads = "*";
         if( $retlist['inPads']) $labelPads = "";
         $label2 = "";
-        if( !$retlist['backup']) $label2 .= " (no back-up)";
+//        if( !$retlist['backup']) $label2 .= " (no back-up)";
         $check = $labelPads . "<a href='.?gigID=". $gigID . "&arrangementID=" . $retlist['arrangementID'] . "'>".$label . "</a>". " " . $this->getStyleLabelForArrangement( $retlist['arrangementID'] ) .  $label2 . $this->getFileLabelForArrangementGig( $retlist['arrangementID'], $gigID ) . $this->getUrlLabelForArrangementGig( $retlist['arrangementID'], $gigID ) . "\n" . " ";
         $return .= "<li><p>" . $check . "</p></li>";
     }
