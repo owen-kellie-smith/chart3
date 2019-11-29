@@ -847,7 +847,8 @@ $sql = "SELECT S.name, A.arrangementID, A.isInPads, CONCAT(S.Name, ' ', P.firstN
 $return = "<ol> \n ";
 //$return = "<table> \n <tr><th>Pads<th>Back-up<th>Name</tr> \n";
     	foreach( $this->conn->listMultiple( $sql ) AS $index=>$row ){
-		$return .= "<li>". $this->getFormPads($row[1], $row[2], $row[3]) . "". $this->getFormBackup($row[1], $row[4], $row[3]) . ""  . "</li> \n";
+		$return .= "<li>". $this->getFormPads($row[1], $row[2], $row[3]) .  "</li> \n";
+	//	$return .= "<li>". $this->getFormPads($row[1], $row[2], $row[3]) . "". $this->getFormBackup($row[1], $row[4], $row[3]) . ""  . "</li> \n";
 //		$return .= "<tr><td>". $this->getFormPads($row[1], $row[2], "") . "</td><td>". $this->getFormBackup($row[1], $row[4], "") . "</td><td>" . $row[3] . "</td></tr> \n";
     	}
 
