@@ -84,7 +84,7 @@ $result = $this->conn->my_execute( $sqlCopySetList );
 
 
 function deleteOutput( $directoryBase ){
-$files = glob($directoryBase . '/output/*'); // get all file names
+$files = glob($directoryBase . '/output/*.pdf'); // get all file names but not the index.php
 foreach($files as $file){ // iterate files
   if(is_file($file))
     unlink($file); // delete file
