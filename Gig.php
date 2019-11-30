@@ -453,7 +453,8 @@ if (mysqli_connect_errno()) {
 } 
 $form = "";
 
-$sql = "SELECT  V.arrangementID, CONCAT('', ' ', IF(AA.isInPads=1,'','*')), " . $chartLabel . " , V.songName FROM arrangement AS AAA, (SELECT COUNT(*) AS arrCount, songID FROM arrangement GROUP BY songID) AS AC, (SELECT COUNT(*), arrangementID, songName FROM view_efilePart GROUP BY arrangementID, songName) AS V, view_arrangement AS A, arrangement AS AA WHERE A.arrangementID=V.arrangementID AND AA.arrangementID=A.arrangementID AND  AAA.arrangementID=A.arrangementID AND AC.songID=AAA.songID ORDER BY " . $orderBy;
+//$sql = "SELECT  V.arrangementID, CONCAT('', ' ', IF(AA.isInPads=1,'','*')), " . $chartLabel . " , V.songName FROM arrangement AS AAA, (SELECT COUNT(*) AS arrCount, songID FROM arrangement GROUP BY songID) AS AC, (SELECT COUNT(*), arrangementID, songName FROM view_efilePart GROUP BY arrangementID, songName) AS V, view_arrangement AS A, arrangement AS AA WHERE A.arrangementID=V.arrangementID AND AA.arrangementID=A.arrangementID AND  AAA.arrangementID=A.arrangementID AND AC.songID=AAA.songID ORDER BY " . $orderBy;
+$sql = "SELECT  V.arrangementID, CONCAT('', ' ', IF(AA.isInPads=1,'','*')), " . $chartLabel . " , V.songName FROM arrangement AS AAA, (SELECT COUNT(*) AS arrCount, songID FROM arrangement GROUP BY songID) AS AC, (SELECT COUNT(*), arrangementID, name as songName FROM view_arrangement GROUP BY arrangementID, name) AS V, view_arrangement AS A, arrangement AS AA WHERE A.arrangementID=V.arrangementID AND AA.arrangementID=A.arrangementID AND  AAA.arrangementID=A.arrangementID AND AC.songID=AAA.songID ORDER BY " . $orderBy;
 //echo $sql;
 $result = mysqli_query($link, $sql);
 if ($result){

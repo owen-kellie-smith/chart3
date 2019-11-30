@@ -263,13 +263,13 @@ $form .= "<p><a href=./maintenance/?arrangementID=" . $arrangementID . "&action=
 $sql = "SELECT P.partID, P.name as partName, song.name, VA.arrangerFirstName, VA.arrangerLastName, S.printOrder, COUNT(*) as iCOUNT from efilePart as EF INNER JOIN efile as E on E.efileID = EF.efileID INNER JOIN publication as PUB on E.publicationID = PUB.publicationID INNER JOIN arrangement as A on A.arrangementID = PUB.arrangementID INNER JOIN view_arrangement AS VA ON VA.arrangementID = A.arrangementID INNER JOIN song ON song.songID = A.songID INNER JOIN part as P ON EF.partID = P.partID inner join section as S on S.sectionID = P.minSectionID WHERE A.arrangementID=" . $arrangementID . " GROUP BY S.printOrder, P.partID ORDER BY S.printOrder ASC, P.partID ASC ";
 $result = mysqli_query($link, $sql);
 // echo $sql;
-$songName = "NOT FOUND";
+$songName = $this->getArrangementLabel( $arrangementID );
 if ($result){
 	$i = 1;
     	while($row = mysqli_fetch_row( $result )) {
 	        $check = "<p>  <a href='.?action=getChart&arrangement[]= " . $arrangementID . "&part[]=" . $row[0] . "'>"  . $row[1] . "</a></p>\n";
 		$form = $form . $check;
-		$songName = $row[2] ." arranged by " . $row[3] . " " .$row[4];
+//		$songName = $row[2] ." arranged by " . $row[3] . " " .$row[4];
     	}
 }
 
@@ -1084,7 +1084,7 @@ foreach ($this->listPdfUnlisted( $path ) as $key=>$filename){
 $echo .=  "</fieldset>";
 
 
-$echo .=  "<fieldset><legend>Arrangements with no media</legend>";
+$echo .=  "<fieldset><legend>Arrangements with no media and no notes</legend>";
 foreach ($this->listArrangementWithNoMedia() as $key=>$row){
     $echo .=  "<form action='' method='post'>";
     $echo .=  "<input type='submit' value='delete " . $this->getArrangementLabel($row['arrangementID']) . "' ><input type='hidden' name='action' value='deleteArrangement'>";
@@ -1114,7 +1114,7 @@ return $echo;
 
 
 function listArrangementWithNoMedia(){
-	$sql = "SELECT A.arrangementID, A.name FROM view_arrangement as A where A.arrangementID NOT IN ( SELECT arrangementID FROM view_efile)  AND A.arrangementID NOT IN (SELECT urlArrangementID FROM url) AND A.arrangementID NOT IN (SELECT arrangementID FROM setList2) ORDER BY A.name ASC";
+	$sql = "SELECT A.arrangementID, A.name FROM view_arrangement as A where A.arrangementID NOT IN ( SELECT arrangementID FROM view_efile)  AND A.arrangementID NOT IN (SELECT urlArrangementID FROM url) AND A.arrangementID NOT IN (SELECT arrangementID FROM setList2) AND A.arrangementID NOT IN (SELECT arrangementID FROM publication where publicationID IN (SELECT publicationID from note)) ORDER BY A.name ASC";
 	$ret = array();
     	foreach( $this->conn->listMultiple( $sql ) AS $index=>$row ){
 		$red1 = array();
@@ -1433,21 +1433,25 @@ function setMP3($input = array()){
 
 function setPublication($input = array()){
     
-  if (isset($input['efile']) && isset($input['formatID']) && strlen($input['efile'])>4 ){
         
     if (isset($input['publicationID']) && $input['publicationID'] > 0){
+      if (isset($input['efile']) && isset($input['formatID']) && strlen($input['efile'])>4 ){
         $sql = "INSERT INTO efile (name, efileTypeID, formatID, publicationID) VALUES('". $input['efile'] . "',1,". $input['formatID'] . "," . $input['publicationID'] . ");";
         $result = $this->conn->my_execute( $sql );
+      }
 
     } elseif (isset($input['description']) && strlen($input['description']) > 0 && isset($input['songID']) && isset($input['arrangerPersonID'])  && $input['songID']>0 && $input['arrangerPersonID']>0 ){
         $sql = "INSERT INTO arrangement (songID, arrangerPersonID) VALUES(". $input['songID'] . ",". $input['arrangerPersonID'] . ");";
+	echo $sql;
         $last_id = $this->conn->my_insert_id($sql);
         $sql = "INSERT INTO publication (arrangementID, description) VALUES(". $last_id . ",'". $input['description'] . "');";
+	echo $sql;
         $last_id = $this->conn->my_insert_id($sql);
+      if (isset($input['efile']) && isset($input['formatID']) && strlen($input['efile'])>4 ){
         $sql = "INSERT INTO efile (name, efileTypeID, formatID, publicationID) VALUES('". $input['efile'] . "',1,". $input['formatID'] . "," . $last_id . ");";
         $result = $this->conn->my_execute( $sql);
+      }
     }
-  }
  
 }
 
