@@ -1161,7 +1161,8 @@ $unpaired = array_diff($files, $pairedFiles);
 $unpaired2 = array();
 foreach ($unpaired as $key=>$filename){
 //    echo $this->numPages($path . "/" . $filename);
-    if ( $filename!="index.php" && ($path!="../pdf" || $this->numPages($path . "/" . $filename) > 0)){
+//    if ( $filename!="index.php" && ($path!="../pdf" || $this->numPages($path . "/" . $filename) > 0)){
+    if ( $filename!="index.php"  ){
         $unpaired2[] = $filename;
     }
 }
