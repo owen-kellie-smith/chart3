@@ -1,5 +1,5 @@
 shasum -a 256 <filename>
-TSB Content 2019-Nov-25 19:00
+TSB Content 2019-Dec-02 09:00
 
 shasum -a 256 $(ls -tr) to get in date ascending order
 
@@ -21,4 +21,5 @@ a053a86112dd8e0bc2987b26260a8382f65917af5ef66dff0b9767ab0861fea8  pdf10_to_Nov21
 ffc842aa6778b0c2c23890595906f200d772a9833d7ab945cb8be6798cf2df7b  pdfJK.tar.gpg
 f1d1ffdbd0c2200cdcdc76ec83c64c97c243c700babd8a1aa10babfb3d9b27c8  pdf12_to_Nov25.tar.gpg
 567f1fa6e36582f7d1975c8f20c549261342711ed8220a067931e2a11db03e53  pdf13_to_Nov27.tar.gpg
-61a3dba0308beb0fd2747abfedfcaa2b9bf9c9e44b05a3e863a7bdce2aa6f497  db.sql.gpg
+33e48080133cd8c74aea21c17b396aa0608ca9a63687660f411f4650165fed32  pdf14_to_Dec02.tar.gpg
+913d63009e594f77a3a7d46ae2d0e4f6f2a1772c21d324debe45066beaf36158  db.sql.gpg
