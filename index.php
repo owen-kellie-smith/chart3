@@ -86,7 +86,7 @@ if (isset($_REQUEST['confirmation'])) {
 // if no valid cookie, show disabled forms and offer means of authentication
 if ($user->hasValidCookie()){
     echo "<p>You are logged in as " . $user->getUserEmail() . "</p>" ;
-    $render->getOutputLink( $arrangement->listAll($_GET['partID']) );
+    $render->getOutputLink( $arrangement->listAll($_GET['partID']), $user->hasAdminCookie() );
     $arrangementID = -1; $gigID = -1;
 	if (isset($_GET['arrangementID'])) {
         $arrangementID = $_GET['arrangementID'];
@@ -97,19 +97,19 @@ if ($user->hasValidCookie()){
 	if (isset($_REQUEST['action'])) {
 		if ( 'getChartList'==$_GET['action'] ) {
 	        if (isset($_GET['partID'])) {
-			echo $render->getOutputLink( $arrangement->listAll($_GET['partID']) );
+			echo $render->getOutputLink( $arrangement->listAll($_GET['partID']), $user->hasAdminCookie() );
 	        }
 			echo $render->getRequestForm($arrangementID, $gigID, $_GET);
 			echo $render->getFooter();
 			exit();
 	       
 		} elseif ( 'getChart'==$_GET['action']) {
-			echo $render->getOutputLink( $arrangement->pdfFromGet($_GET) );
+			echo $render->getOutputLink( $arrangement->pdfFromGet($_GET), $user->hasAdminCookie() );
 			echo $render->getRequestForm($arrangementID, $gigID, $_GET);
 			echo $render->getFooter();
 			exit();
 		} elseif ( 'getGig'==$_GET['action']) {
-			echo $render->getOutputLink( $gig->pdfFromGig($_GET) );
+			echo $render->getOutputLink( $gig->pdfFromGig($_GET), $user->hasAdminCookie() );
 			echo $render->getRequestForm($arrangementID, $gigID, $_GET);
 			echo $render->getFooter();
 			exit();

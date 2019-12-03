@@ -44,6 +44,7 @@ if ($this->hasValidCookie()){
 } catch(Exception $e) {
 echo "Error!  Error message is: " . $e->getMessage();
 }
+echo "<p><a href=''>Back</a></p>";
 }
 
 

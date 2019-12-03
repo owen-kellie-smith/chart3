@@ -30,10 +30,12 @@ $form .= "<div>
 return $form;
 }
 
-function getOutputLink( $filename ){
+function getOutputLink( $filename, $bDownload=true ){
 	$out = "";
 	$out .= "<fieldset><legend>Your requested  charts</legend>";
-	$out .= "<a href='" . $filename . "'>Download your pdf</a>";
+	if ($bDownload){
+	   $out .= "<a href='" . $filename . "'>Download pdf</a>";
+	}
 	$out .= "<form action='' method='POST'>";
 //	$out .= "<form action='' method='GET'>";
 	$out .= "<input type='hidden' name='fileToSend' value='" . $filename . "' >";
