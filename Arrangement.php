@@ -216,7 +216,7 @@ $sql = "SELECT G.name, C.countStyle, G.gigID FROM gig as G LEFT  JOIN (SELECT Co
 
 
 function getArrangementLabel( $arrangementID ){
-$sql = "SELECT VA.name, VA.arrangerFirstName, VA.arrangerLastName FROM view_arrangement AS VA WHERE VA.arrangementID=" . $arrangementID ;
+$sql = "SELECT VA.name, VA.arrangerFirstName, VA.arrangerLastName, IFNULL(P.description ,'') FROM view_arrangement AS VA LEFT JOIN (SELECT description, arrangementID FROM publication WHERE arrangementID=" . $arrangementID . ") AS P ON P.arrangementID = VA.arrangementID WHERE VA.arrangementID=" . $arrangementID ;
 //echo $sql;
 include "mysql-cred.php";
 $link  = mysqli_connect( $servername, $username, $password, $database);
@@ -225,6 +225,9 @@ $result = mysqli_query($link, $sql);
 $songName = "NOT FOUND";
 foreach( $this->conn->listMultiple( $sql ) AS $index=>$row ){
 		$songName = $row[0] ." arranged by " . $row[1] . " " .$row[2];
+		if (strlen($row[3])>0){
+         	    	$songName .= " -- " . $row[3] . "";
+		}
 }
 
 
