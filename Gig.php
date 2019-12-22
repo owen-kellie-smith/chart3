@@ -756,7 +756,7 @@ function getSetPartsOutput( $gigID, $directoryBase, $includeFiller=false ){
 
 $this->deleteOutput($directoryBase);
 
-$sql = "SELECT DISTINCT partName from view_efilePartSetList2 where gigID = " . $gigID . " ORDER BY partName ASC ";
+$sql = "SELECT name from part ORDER BY name ASC ";
     	foreach( $this->conn->listMultiple( $sql ) AS $index=>$row ){
          $inp = array();
 	 $inp['gigID'] = $gigID;
