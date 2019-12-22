@@ -914,7 +914,7 @@ if (isset($partName)){
 	if (1==$includesAll || 1==$hasWhere || 1==$isStyle){
 		$orderByFile = " ORDER BY IFNULL(formatID, -1) ASC, V.name ASC, partName ASC ";
 	}
-	if (1==$hasWhere ){
+	if (1==$hasWhere || 1==$isStyle || 1==$includesAll ){
 		$whereGig2 = " V.arrangementID IN " . $this->arrInGigList( $gigID) ;
 		$whereGig = " g.arrangementID IN " . $this->arrInGigList( $gigID) ;
 $sql = "SELECT  'unnecessary fileName', 'unuseded startPage', 'unused endPage', IFNULL(formatID,-1), 'unused setListOrder', IFNULL(partName,-1), V.name, V.arrangementID  FROM ( view_arrangement AS V )  LEFT JOIN (SELECT  formatID, partName, arrangementID, count(*) from view_efilePart as g WHERE ( 0 " . $partWhere . " ) AND ( 0 OR " . $whereGig . " ) GROUP BY formatID, partName, arrangementID) AS V2 ON V2.arrangementID = V.arrangementID WHERE ( 0 OR " . $whereGig2 . " ) AND " . $whereFilterIndex . $orderByFile  . ";";
