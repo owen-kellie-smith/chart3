@@ -29,10 +29,40 @@ function getUserEmail(){
 	 return $sRet;
 }
 
+function sendFileToAllUsers( $sourceFile, $strPart, $sMessage ){
+$sourceFile = "../" . $sourceFile;  // messy hack because it's called from maintenance
+//echo $sourceFile;
+    $sent = "";
+try{
+if (!(file_exists($sourceFile))){
+	throw new Exception($sourceFile . " does not exist.");
+	}
+if ($this->hasValidCookie()){
+//     echo "Trying to email: " . $sourceFile . "\r\n <br />";
+    $sql = "SELECT plainEmail FROM user INNER JOIN userPart on user.userID = userPart.userID INNER JOIN part on part.partID = userPart.partID WHERE plainEmail IS NOT NULL AND okToMail=true AND part.name = '" . $strPart . "'";
+//    echo $sql;
+    foreach( $this->conn->listMultiple( $sql ) AS $index=>$row ){
+        $txt = "TSB: " . basename($sourceFile);
+        if (""==$sMessage){ $sMessage = $txt; }
+        $ret = $this->sendAttachment( $row[0], $sourceFile, basename($sourceFile),  $txt, $sMessage, $sMessage, false);
+	$sent .=  $ret['message'] . " ";
+      }
+	} else {
+	throw new Exception("Login first");
+	}
+} catch(Exception $e) {
+return "Error!  Error message is: " . $e->getMessage();
+}
+return "File emailed to "  . $sent;
+}
 
 function sendPlainFileAndDeleteIt( $sourceFile ){
+echo $sourceFile;
 
 try{
+if (!(file_exists($sourceFile))){
+	throw new Exception($sourceFile . " does not exist.");
+	}
 if ($this->hasValidCookie()){
      echo "Trying to email: " . $sourceFile . "\r\n <br />";
      $txt = "TSB: " . basename($sourceFile);
@@ -50,6 +80,7 @@ echo "<p><a href=''>Back</a></p>";
 
 function sendAttachment( $toAddress, $filePath, $newFileName,  $subject, $body, $altBody, $deleteAFterSending){
 // Instantiation and passing `true` enables exceptions
+echo "<br/>" . "filePath " . $filePath . "<br/>";
 $ret = array();
 $mail = new PHPMailer(true);
 
@@ -68,9 +99,9 @@ try {
        $mail->Port = $SMPT['Port'];
     }
 
-echo "Host: " . $mail->Host . "<br/>"; 
-echo "len(Username): " . strlen($mail->Username) . "<br/>";
-echo "len(password): " . strlen($mail->Password) . "<br/>";
+//echo "Host: " . $mail->Host . "<br/>"; 
+//echo "len(Username): " . strlen($mail->Username) . "<br/>";
+//echo "len(password): " . strlen($mail->Password) . "<br/>";
 
 
     //Recipients
@@ -92,7 +123,7 @@ echo "len(password): " . strlen($mail->Password) . "<br/>";
         unlink($filePath);
     }
     $ret['status'] = true;
-    $ret['message'] = 'Message has been sent';
+    $ret['message'] = 'Message has been sent to ' . $toAddress;
 } catch (Exception $e) {
     $ret['status'] = false;
     $ret['message'] =  "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";

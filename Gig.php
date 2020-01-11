@@ -6,10 +6,12 @@ class Gig{
 
 private $conn;
 private $arrangement;
+private $user;
 
     function __construct() {
         $this->conn = New Connection();
         $this->arrangement = New Arrangement();
+        $this->user = New User();
     }
 
 function sHeader( $input ){
@@ -763,8 +765,12 @@ $sql = "SELECT name from part ORDER BY name ASC ";
 	 $inp['part'] = $row[0];
 	 $inp['includeFiller'] = $includeFiller;
 	 $inp['includeMusic'] = 'include';
-         		$this->pdfFromGigExplicit($inp, $directoryBase, "Gig" . $gigID . $row[0] );
-        		echo $row[0] . " ";
+
+//	 $file = $this->pdfFromGigExplicit($inp, $directoryBase, "Gig" . $gigID . str_replace(" ", "", trim($row[0])) );
+	 $file = $this->pdfFromGigExplicit($inp, $directoryBase );
+//	 sleep(9);
+	 $message = $this->user->sendFileToAllUsers( $file, $inp['part'], "Gig ". $gigID .  " " . $this->getGigLabel( $gigID ). " for  " . $inp['part'] );
+        		echo $row[0] . " " . $file . " " . $message . "<br/>";
     	}
 
 }
