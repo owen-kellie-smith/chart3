@@ -55,7 +55,22 @@ $mail = new PHPMailer(true);
 
 try {
     //Server settings
-    $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      // Enable verbose debug output
+//    $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      // Enable verbose debug output
+    $mail->SMTPDebug = SMTP::DEBUG_OFF;                      // Disable verbose debug output
+    include 'mail-cred.php';
+    if (isset( $SMTP['Host']) && isset( $SMTP['Username']) && isset ($SMTP['Password']) && isset($SMTP['SMTPSecure']) && isset($SMTP['Port'])){
+       $mail->isSMTP();
+       $mail->SMTPAuth = true;
+       $mail->Host = $SMTP['Host'];
+       $mail->Username = $SMTP['Username'];
+       $mail->Password = $SMTP['Password'];
+       $mail->SMTPSecure = $SMTP['SMTPSecure'];
+       $mail->Port = $SMPT['Port'];
+    }
+
+echo "Host: " . $mail->Host . "<br/>"; 
+echo "len(Username): " . strlen($mail->Username) . "<br/>";
+echo "len(password): " . strlen($mail->Password) . "<br/>";
 
 
     //Recipients
