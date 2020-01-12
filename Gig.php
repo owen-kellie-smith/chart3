@@ -754,13 +754,12 @@ $form .= $setList;
 $form .= "<p><input type='submit' value='Get parts (output to output folder)'></p></form></fieldset>";
 $form .= "<fieldset><legend>Email parts for set</legend><form action = '' method='GET'>";
 $form .= "<input type='hidden' name='action' value='emailPartsForSet' />";
-$form .= $setList;
 $emails = array(); $parts=array();
-$sql = " SELECT plainEmail, name, userP.userID, userP.partID, IFNULL(C.counter,0) from (select plainEmail, userID, part.name, partID FROM user, part WHERE user.okToMail=true) AS userP LEFT JOIN (SELECT COUNT(*) as counter, userID, partID FROM userPart group BY userID, partID) as C on userP.userID = C.userID and userP.partID = C.partID ORDER BY plainEmail ASC, userP.name ASC";
+$sql = " SELECT plainEmail, name, userP.userID, userP.partID, IFNULL(C.counter,0), nickName from (select plainEmail, userID, part.name, partID, nickName FROM user, part WHERE user.okToMail=true) AS userP LEFT JOIN (SELECT COUNT(*) as counter, userID, partID FROM userPart group BY userID, partID) as C on userP.userID = C.userID and userP.partID = C.partID ORDER BY plainEmail ASC, userP.name ASC";
 $checks = "";
 foreach( $this->conn->listMultiple( $sql ) AS $index=>$row ){
    if ($row[4] > 0){
-     $checks .= "<p>" . $row[0] . " " . $row[1] . "<input type='checkbox' name='email[" . $row[0] . "][" . $row[1] . "]' value=true checked><p>";
+     $checks .= "<p>" . $row[5] . " " .$row[0] . " " . $row[1] . "<input type='checkbox' name='email[" . $row[0] . "][" . $row[1] . "]' value=true ><p>";
      }
 }
 $form .= $checks;
@@ -769,7 +768,10 @@ $sqlP = " SELECT name, name from part  ORDER BY name ASC";
 $form .= "<p>" . $this->selectList($sqlU, 'user[1][name]') . $this->selectList($sqlP,'user[1][part]') . "</p>";
 $form .= "<p>" . $this->selectList($sqlU, 'user[2][name]') . $this->selectList($sqlP,'user[2][part]') . "</p>";
 $form .= "<p>" . $this->selectList($sqlU, 'user[3][name]') . $this->selectList($sqlP,'user[3][part]') . "</p>";
+$form .= "<p>" . $this->selectList($sqlU, 'user[4][name]') . $this->selectList($sqlP,'user[4][part]') . "</p>";
+$form .= "<p>" . $this->selectList($sqlU, 'user[5][name]') . $this->selectList($sqlP,'user[5][part]') . "</p>";
 $form .= "<p>Optional message<textarea name='message'></textarea></p>" ; 
+$form .= $setList;
 $form .= "<p><input type='submit' value='Email parts'></p></form></fieldset>";
 return $form;
 }
@@ -818,10 +820,19 @@ $gigID = $input['gigID'];
 	 $inp['gigID'] = $input['gigID'];
 	 $inp['part'] = $part;
 	 $inp['includeFiller'] = $includeFiller;
+	 $inp['includeMusic'] = 'exclude';
+	 $fileNotes = $this->pdfFromGigExplicit($inp, $directoryBase );
+	 $pagesNotesOnly =  $this->arrangement->numPages('../' . $fileNotes);
 	 $inp['includeMusic'] = 'include';
 	 $file = $this->pdfFromGigExplicit($inp, $directoryBase );
-	 $message = $this->user->sendFileToUser( $emailTo, $file,  "Gig ". $gigID .  " " . $this->getGigLabel( $gigID ). " for  " . $inp['part'] . " " . $input['message'] );
-        echo $emailTo . " " . $inp['part'] . " " . $file . " " . $message . "<br/>";
+	 if ($this->arrangement->numPages('../' . $file) > $pagesNotesOnly){
+	    $sBody = "Music for " . $inp['part'] . " part for " . $this->getGigLabel( $gigID ). " " . $input['message'] ;
+	    $sSubject = "TSB: " . $inp['part'] . " " . $this->getGigLabel( $gigID ) ;
+	    $message = $this->user->sendFileToUser( $emailTo, $file,  $sBody, $sSubject);
+            echo $emailTo . " " . $inp['part'] . " " . $file . " " . $message . "<br/>";
+	 } else {
+	    echo $inp['part'] . " has " . $this->arrangement->numPages('../' . $file) . " pages but without music has " . $pagesNotesOnly . " pages so no mail.<br/>";
+	 }
     	}
 	}
     	foreach( $input['user'] AS $unused=>$arr ){
@@ -832,10 +843,18 @@ $gigID = $input['gigID'];
 	 $inp['part'] = $arr['part'];
 	 $emailTo = $arr['name'];
 	 $inp['includeFiller'] = $includeFiller;
+	 $fileNotes = $this->pdfFromGigExplicit($inp, $directoryBase );
+	 $pagesNotesOnly =  $this->arrangement->numPages('../' . $fileNotes);
 	 $inp['includeMusic'] = 'include';
 	 $file = $this->pdfFromGigExplicit($inp, $directoryBase );
-	 $message = $this->user->sendFileToUser( $emailTo, $file,  "Gig ". $gigID .  " " . $this->getGigLabel( $gigID ). " for  " . $inp['part'] . " " . $input['message'] );
-        echo $emailTo . " " . $inp['part'] . " " . $file . " " . $message . "<br/>";
+	 if ($this->arrangement->numPages('../' . $file) > $pagesNotesOnly){
+	    $sBody = "Music for " . $inp['part'] . " part for " . $this->getGigLabel( $gigID ). " " . $input['message'] ;
+	    $sSubject = "TSB: " . $inp['part'] . " " . $this->getGigLabel( $gigID ) ;
+	    $message = $this->user->sendFileToUser( $emailTo, $file,  $sBody, $sSubject);
+            echo $emailTo . " " . $inp['part'] . " " . $file . " " . $message . "<br/>";
+	 } else {
+	    echo $inp['part'] . " has " . $this->arrangement->numPages('../' . $file) . " pages but without music has " . $pagesNotesOnly . " pages so no mail.<br/>";
+	 }
 	} // if
 	} // if
 	}

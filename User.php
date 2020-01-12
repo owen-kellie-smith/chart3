@@ -29,7 +29,7 @@ function getUserEmail(){
 	 return $sRet;
 }
 
-function sendFileToUser( $toEmail, $sourceFile,  $sMessage ){
+function sendFileToUser( $toEmail, $sourceFile,  $sMessage, $subject ){
 $sourceFile = "../" . $sourceFile;  // messy hack because it's called from maintenance
     $sent = "";
 try{
@@ -39,7 +39,7 @@ if (!(file_exists($sourceFile))){
 if ($this->hasValidCookie()){
         $txt = "TSB: " . basename($sourceFile);
         if (""==$sMessage){ $sMessage = $txt; }
-        $ret = $this->sendAttachment( $toEmail, $sourceFile, basename($sourceFile),  $txt, $sMessage, $sMessage, false);
+        $ret = $this->sendAttachment( $toEmail, $sourceFile, basename($sourceFile),  $subject, $sMessage, $sMessage, false);
 	$sent .=  $ret['message'] . " ";
 	} else {
 	throw new Exception("Login first");
