@@ -6,7 +6,7 @@ define("ALL_USERS_ARE_ADMINS", "No");
 
 
 define("EMAIL_FROM_ADDRESS","someone@somewhere.net");
-define("EMAIL_FROM_ALT","Site domain");
+define("EMAIL_FROM_ALT","Someone (a name set in include_refsC)");
 define("E_KEY","SomeComplicatedKey123");
 
 define("PDF_HEADER_MESSAGE","Some text to put at the top of each pdf");
