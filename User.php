@@ -29,6 +29,27 @@ function getUserEmail(){
 	 return $sRet;
 }
 
+function sendFileToUser( $toEmail, $sourceFile,  $sMessage ){
+$sourceFile = "../" . $sourceFile;  // messy hack because it's called from maintenance
+    $sent = "";
+try{
+if (!(file_exists($sourceFile))){
+	throw new Exception($sourceFile . " does not exist.");
+	}
+if ($this->hasValidCookie()){
+        $txt = "TSB: " . basename($sourceFile);
+        if (""==$sMessage){ $sMessage = $txt; }
+        $ret = $this->sendAttachment( $toEmail, $sourceFile, basename($sourceFile),  $txt, $sMessage, $sMessage, false);
+	$sent .=  $ret['message'] . " ";
+	} else {
+	throw new Exception("Login first");
+	}
+} catch(Exception $e) {
+return "Error!  Error message is: " . $e->getMessage();
+}
+return "File emailed to "  . $sent;
+}
+
 function sendFileToAllUsers( $sourceFile, $strPart, $sMessage ){
 $sourceFile = "../" . $sourceFile;  // messy hack because it's called from maintenance
 //echo $sourceFile;

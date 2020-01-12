@@ -11,7 +11,7 @@ $user = new User();
 $render = new Render();
 $arrangement = new Arrangement();
 $gig = new Gig();
-//echo "<pre>POST" . print_r($_POST,1) . "GET" . print_r($_GET,1) . "</pre>";
+echo "<pre>POST" . print_r($_POST,1) . "GET" . print_r($_GET,1) . "</pre>";
 if ($_POST){
 if ($user->hasValidCookie()){
 if (isset($_POST['action'])){
@@ -202,6 +202,12 @@ if (isset($_GET['action'])){
             $gig->getSetPartsOutput( $_GET['gigID'], dirname(getcwd()));
             echo "<a href='../output/'>Output directory</a>";
 
+        }
+    }
+
+    if ('emailPartsForSet'==$_GET['action']){
+        if (isset($_GET['gigID'])){
+            $gig->getSetPartsEmailed( $_GET, dirname(getcwd()));
         }
     }
 

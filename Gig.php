@@ -739,20 +739,53 @@ function getSetPartsForm(){
 
 $form = "<fieldset><legend>Output parts for set</legend><form action = '' method='GET'>";
 $form .= "<input type='hidden' name='action' value='getPartsForSet' />";
-$form .= "<p><select name='gigID'>";
+$setList = "<p><select name='gigID'>";
 
 $sql = "SELECT DISTINCT gigID, name, gigDate FROM gig ORDER BY gigDate DESC, name ASC";
 	$i = 1;
     	foreach( $this->conn->listMultiple( $sql ) AS $index=>$row ){
     	    if(11!=$row[0]){
         		$check = "<p><option value=" . $row[0] . ">" . $row[1] . " " . $row[2] . "</p>";
-        		$form = $form . $check;
+        		$setList = $setList . $check;
     	    }
     	}
-$form .= "</p><p><input type='submit' value='Get parts (output to output folder)'></p></form></fieldset>";
+$setList = $setList . "</select></p>";	
+$form .= $setList;
+$form .= "<p><input type='submit' value='Get parts (output to output folder)'></p></form></fieldset>";
+$form .= "<fieldset><legend>Email parts for set</legend><form action = '' method='GET'>";
+$form .= "<input type='hidden' name='action' value='emailPartsForSet' />";
+$form .= $setList;
+$emails = array(); $parts=array();
+$sql = " SELECT plainEmail, name, userP.userID, userP.partID, IFNULL(C.counter,0) from (select plainEmail, userID, part.name, partID FROM user, part WHERE user.okToMail=true) AS userP LEFT JOIN (SELECT COUNT(*) as counter, userID, partID FROM userPart group BY userID, partID) as C on userP.userID = C.userID and userP.partID = C.partID ORDER BY plainEmail ASC, userP.name ASC";
+$checks = "";
+foreach( $this->conn->listMultiple( $sql ) AS $index=>$row ){
+   if ($row[4] > 0){
+     $checks .= "<p>" . $row[0] . " " . $row[1] . "<input type='checkbox' name='email[" . $row[0] . "][" . $row[1] . "]' value=true checked><p>";
+     }
+}
+$form .= $checks;
+$sqlU = " SELECT plainEmail, plainEmail from user WHERE okToMail=true ORDER BY plainEmail ASC";
+$sqlP = " SELECT name, name from part  ORDER BY name ASC";
+$form .= "<p>" . $this->selectList($sqlU, 'user[1][name]') . $this->selectList($sqlP,'user[1][part]') . "</p>";
+$form .= "<p>" . $this->selectList($sqlU, 'user[2][name]') . $this->selectList($sqlP,'user[2][part]') . "</p>";
+$form .= "<p>" . $this->selectList($sqlU, 'user[3][name]') . $this->selectList($sqlP,'user[3][part]') . "</p>";
+$form .= "<p>Optional message<textarea name='message'></textarea></p>" ; 
+$form .= "<p><input type='submit' value='Email parts'></p></form></fieldset>";
 return $form;
 }
 
+
+function selectList( $sql, $name){
+$setList = "<select name='" . $name . "'>";
+   $check = "<p><option ></p>";
+   $setList = $setList . $check;
+    	foreach( $this->conn->listMultiple( $sql ) AS $index=>$row ){
+        		$check = "<p><option value='" . $row[0] . "'>" . $row[1] . "</p>";
+        		$setList = $setList . $check;
+    	}
+$setList .= "</select>";
+return $setList;
+}
 
 function getSetPartsOutput( $gigID, $directoryBase, $includeFiller=false ){
 
@@ -769,11 +802,46 @@ $sql = "SELECT name from part ORDER BY name ASC ";
 //	 $file = $this->pdfFromGigExplicit($inp, $directoryBase, "Gig" . $gigID . str_replace(" ", "", trim($row[0])) );
 	 $file = $this->pdfFromGigExplicit($inp, $directoryBase );
 //	 sleep(9);
-	 $message = $this->user->sendFileToAllUsers( $file, $inp['part'], "Gig ". $gigID .  " " . $this->getGigLabel( $gigID ). " for  " . $inp['part'] );
+	 $message = "";
+//	 $message = $this->user->sendFileToAllUsers( $file, $inp['part'], "Gig ". $gigID .  " " . $this->getGigLabel( $gigID ). " for  " . $inp['part'] );
         		echo $row[0] . " " . $file . " " . $message . "<br/>";
     	}
 
 }
+
+function getSetPartsEmailed( $input, $directoryBase, $includeFiller=false ){
+$this->deleteOutput($directoryBase);
+$gigID = $input['gigID'];
+    	foreach( $input['email'] AS $emailTo=>$arr ){
+    	foreach( $arr AS $part=>$unused ){
+         $inp = array();
+	 $inp['gigID'] = $input['gigID'];
+	 $inp['part'] = $part;
+	 $inp['includeFiller'] = $includeFiller;
+	 $inp['includeMusic'] = 'include';
+	 $file = $this->pdfFromGigExplicit($inp, $directoryBase );
+	 $message = $this->user->sendFileToUser( $emailTo, $file,  "Gig ". $gigID .  " " . $this->getGigLabel( $gigID ). " for  " . $inp['part'] . " " . $input['message'] );
+        echo $emailTo . " " . $inp['part'] . " " . $file . " " . $message . "<br/>";
+    	}
+	}
+    	foreach( $input['user'] AS $unused=>$arr ){
+	 if (isset($arr['name']) && isset($arr['part'])){
+	 if (strlen($arr['name']) > 1 && strlen($arr['part']) > 1){
+         $inp = array();
+	 $inp['gigID'] = $input['gigID'];
+	 $inp['part'] = $arr['part'];
+	 $emailTo = $arr['name'];
+	 $inp['includeFiller'] = $includeFiller;
+	 $inp['includeMusic'] = 'include';
+	 $file = $this->pdfFromGigExplicit($inp, $directoryBase );
+	 $message = $this->user->sendFileToUser( $emailTo, $file,  "Gig ". $gigID .  " " . $this->getGigLabel( $gigID ). " for  " . $inp['part'] . " " . $input['message'] );
+        echo $emailTo . " " . $inp['part'] . " " . $file . " " . $message . "<br/>";
+	} // if
+	} // if
+	}
+
+}
+
 
 function getDateTimeNow(){
   $tzel = new  DateTimeZone('Europe/London') ;
