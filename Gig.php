@@ -801,8 +801,8 @@ $sql = "SELECT name from part ORDER BY name ASC ";
 	 $inp['includeFiller'] = $includeFiller;
 	 $inp['includeMusic'] = 'include';
 
-//	 $file = $this->pdfFromGigExplicit($inp, $directoryBase, "Gig" . $gigID . str_replace(" ", "", trim($row[0])) );
-	 $file = $this->pdfFromGigExplicit($inp, $directoryBase );
+	 $file = $this->pdfFromGigExplicit($inp, $directoryBase, "Gig" . $gigID . str_replace(" ", "", trim($row[0])) );
+//	 $file = $this->pdfFromGigExplicit($inp, $directoryBase );
 //	 sleep(9);
 	 $message = "";
 //	 $message = $this->user->sendFileToAllUsers( $file, $inp['part'], "Gig ". $gigID .  " " . $this->getGigLabel( $gigID ). " for  " . $inp['part'] );
@@ -821,10 +821,12 @@ $gigID = $input['gigID'];
 	 $inp['part'] = $part;
 	 $inp['includeFiller'] = $includeFiller;
 	 $inp['includeMusic'] = 'exclude';
-	 $fileNotes = $this->pdfFromGigExplicit($inp, $directoryBase );
+//	 $fileNotes = $this->pdfFromGigExplicit($inp, $directoryBase );
+	 $fileNotes = $this->pdfFromGigExplicit($inp, $directoryBase, "Gig" . $gigID . str_replace(" ", "", trim($part)) );
 	 $pagesNotesOnly =  $this->arrangement->numPages('../' . $fileNotes);
 	 $inp['includeMusic'] = 'include';
-	 $file = $this->pdfFromGigExplicit($inp, $directoryBase );
+//	 $file = $this->pdfFromGigExplicit($inp, $directoryBase );
+	 $file = $this->pdfFromGigExplicit($inp, $directoryBase, "Gig" . $gigID . str_replace(" ", "", trim($part)) );
 	 if ($this->arrangement->numPages('../' . $file) > $pagesNotesOnly){
 	    $sBody = "Music for " . $inp['part'] . " part for " . $this->getGigLabel( $gigID ). " " . $input['message'] ;
 	    $sSubject = "TSB: " . $inp['part'] . " " . $this->getGigLabel( $gigID ) ;
