@@ -962,6 +962,10 @@ if (isset($input['includeMusic'])){
         $includeMusic = true;
     } 
 }    
+      $orderAlpha = false;
+if (isset($input['orderAlpha'])){
+       $orderAlpha = true;
+}    
 $where="";
 $partWhere="";
 $distinctOrder = " ,v.setListOrder ";
@@ -1006,17 +1010,17 @@ if (isset($partName)){
 	} else {
 		$whereGig = " g.gigID =".  $gigID . " " ;
 	}
-	if (1==$includesAll || 1==$hasWhere || 1==$isStyle){
+	if (1==$includesAll || 1==$hasWhere || 1==$isStyle || $orderAlpha){
 		$orderByFile = " ORDER BY IFNULL(formatID, -1) ASC, V.name ASC, partName ASC ";
 	}
 	if (1==$hasWhere || 1==$isStyle || 1==$includesAll ){
 		$whereGig2 = " V.arrangementID IN " . $this->arrInGigList( $gigID) ;
 		$whereGig = " g.arrangementID IN " . $this->arrInGigList( $gigID) ;
 $sql = "SELECT  'unnecessary fileName', 'unuseded startPage', 'unused endPage', IFNULL(formatID,-1), 'unused setListOrder', IFNULL(partName,-1), V.name, V.arrangementID  FROM ( view_arrangement AS V )  LEFT JOIN (SELECT  formatID, partName, arrangementID, count(*) from view_efilePart as g WHERE ( 0 " . $partWhere . " ) AND ( 0 OR " . $whereGig . " ) GROUP BY formatID, partName, arrangementID) AS V2 ON V2.arrangementID = V.arrangementID WHERE ( 0 OR " . $whereGig2 . " ) AND " . $whereFilterIndex . $orderByFile  . ";";
-    $sqlIncludeMusic= "SELECT  fileName, startPage, endPage, formatID, 'unused setListOrder' FROM view_efilePart as g INNER JOIN view_arrangement AS V on V.arrangementID = g.arrangementID WHERE  ( 0 " . $partWhere . ") AND ( 0 OR " . $whereGig . " )   AND " . $whereFilter .  $orderByFile . ";";
+    $sqlIncludeMusic= "SELECT  fileName, startPage, endPage, formatID, 'unused setListOrder', V.arrangementID FROM view_efilePart as g INNER JOIN view_arrangement AS V on V.arrangementID = g.arrangementID WHERE  ( 0 " . $partWhere . ") AND ( 0 OR " . $whereGig . " )   AND " . $whereFilter .  $orderByFile . ";";
         } else {
 $sql = "SELECT  'unnecessary fileName', 'unuseded startPage', 'unused endPage', IFNULL(formatID,-1), 'unused setListOrder', IFNULL(partName,-1), V.name, V.arrangementID  FROM (setList2 as g INNER JOIN view_arrangement AS V on V.arrangementID = g.arrangementID)  LEFT JOIN (SELECT gigID, formatID, partName, arrangementID from view_efilePartSetList2 as g WHERE ( 0 " . $partWhere . " ) AND ( 0 OR " . $whereGig . " )) AS V2 ON V2.arrangementID = g.arrangementID WHERE ( 0 OR " . $whereGig . " ) AND " . $whereFilterIndex . $orderByFile  . ";";
-    $sqlIncludeMusic= "SELECT fileName, startPage, endPage, formatID, 'unused setListOrder' FROM view_efilePartSetList2 as g INNER JOIN view_arrangement AS V on V.arrangementID = g.arrangementID WHERE  ( 0 " . $partWhere . ") AND ( 0 OR " . $whereGig . " )   AND " . $whereFilter .  $orderByFile . ";";
+    $sqlIncludeMusic= "SELECT fileName, startPage, endPage, formatID, 'unused setListOrder', V.arrangementID FROM view_efilePartSetList2 as g INNER JOIN view_arrangement AS V on V.arrangementID = g.arrangementID WHERE  ( 0 " . $partWhere . ") AND ( 0 OR " . $whereGig . " )   AND " . $whereFilter .  $orderByFile . ";";
         }
 
 //echo $sql;
@@ -1098,6 +1102,13 @@ if ($includeMusic){
 		}
 		// use the imported page and place it at point 10,10 with a width of 200 mm
 	}
+	// add motes
+	$pagesSoFar = $pdf->PageNo();
+	$singleArr = array();
+	$singleArr[]=$row[5]; // arrangementID
+        $this->arrangement->getAllNotes($pdf, $singleArr);
+	$newNotePages = $pdf->PageNo() - $pagesSoFar;
+	$jj = $jj + $newNotePages;
           // pad out with empty pages
 	  if (0 == $row[3]){
 		$jtarget = ceil($jj/4) * 4;
