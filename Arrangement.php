@@ -1199,9 +1199,12 @@ function numPages($filename){
 function pdfFromGet( $input){
     try {
 
+$stream='';
 
-
-
+if (!file_exists('pdf') || !file_exists('output')){
+chdir('../');
+}
+echo '<pre>'.print_r($input,1)."</pre>";
 
 $where=" OR V.efileID=-999 ";
 $partWhere=" OR V.partID=-999 ";
@@ -1253,7 +1256,7 @@ if (isset($input['arrangement'])){
 	$this->getAllNotes($pdf, $input['arrangement']);
 }
     	foreach( $this->conn->listMultiple( $sql ) AS $index=>$row ){
-	  $pdf->setSourceFile("pdf/" . $row[0]);
+	  $pdf->setSourceFile($stream."pdf/" . $row[0]);
 	  $jj = 0;
 	  // https://stackoverflow.com/questions/2318858/how-to-recover-from-a-fatal-error-allowed-memory-size-exhausted?noredirect=1&lq=1
 	  if((memory_get_usage() / 1024 /1024) > 30){
@@ -1303,7 +1306,11 @@ if (isset($input['arrangement'])){
 
         }
 //$this->conn->saveRequest($input);
-$yourFile =  'output/'. md5(time()) . 'myfile.pdf';
+$filesuf ="";
+if (isset($input['filesuf'])){
+ $filesuf=$input['filesuf'];
+}
+$yourFile =  'output/'. $filesuf . md5(time()) . 'myfile.pdf';
 $pdf->Output(getcwd() . "/" . $yourFile,'F');
 return $yourFile;
     }

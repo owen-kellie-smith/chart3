@@ -794,6 +794,7 @@ function getSetPartsOutput( $gigID, $directoryBase, $includeFiller=false ){
 $this->deleteOutput($directoryBase);
 
 $sql = "SELECT name from part ORDER BY name ASC ";
+$sql = "SELECT name from part WHERE name NOT IN('Conductor','Piano') ORDER BY name ASC ";
     	foreach( $this->conn->listMultiple( $sql ) AS $index=>$row ){
          $inp = array();
 	 $inp['gigID'] = $gigID;
@@ -809,6 +810,18 @@ $sql = "SELECT name from part ORDER BY name ASC ";
         		echo $row[0] . " " . $file . " " . $message . "<br/>";
     	}
 
+$sql = "SELECT part.name, arrangementID, V.name, part.partID  from part, view_arrangement  as V WHERE arrangementID in "  . $this->arrInGigList( $gigID );
+//echo $sql;
+//echo $gigID;
+    	foreach( $this->conn->listMultiple( $sql ) AS $index=>$row ){
+	$label = $row[0] .  $row[2];
+	 $inp['part'] = array(0=>$row[3]);
+	 $inp['arrangement'] = array(0=>$row[1]);
+	 $inp['stream']="../";
+	 $inp['filesuf']=$label;
+	 echo $this->arrangement->pdfFromGet($inp);
+	echo $label . "<br/>";
+	}
 }
 
 function getSetPartsEmailed( $input, $directoryBase, $includeFiller=false ){
