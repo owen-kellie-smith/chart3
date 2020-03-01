@@ -77,7 +77,7 @@ return "Error!  Error message is: " . $e->getMessage();
 return "File emailed to "  . $sent;
 }
 
-function sendPlainFileAndDeleteIt( $sourceFile ){
+function sendPlainFileAndDeleteIt( $sourceFile, $in=array() ){
 echo $sourceFile;
 
 try{
@@ -87,7 +87,11 @@ if (!(file_exists($sourceFile))){
 if ($this->hasValidCookie()){
      echo "Trying to email: " . $sourceFile . "\r\n <br />";
      $txt = "TSB: " . basename($sourceFile);
-     $ret = $this->sendAttachment( $this->getUserEmail(), $sourceFile, basename($sourceFile),  $txt, $txt, $txt, true);
+     $txtb = "TSB: " . basename($sourceFile);
+     if (isset($in['input'])){
+         $txtb .= "\r\n".$in['input'];
+	 }	
+     $ret = $this->sendAttachment( $this->getUserEmail(), $sourceFile, basename($sourceFile),  $txt, $txtb, $txtb, true);
 	echo $ret['message'];
 	} else {
 	echo "login first.";

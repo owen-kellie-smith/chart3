@@ -40,6 +40,7 @@ function getOutputLink( $filename, $bDownload=true ){
 //	$out .= "<form action='' method='GET'>";
 	$out .= "<input type='hidden' name='fileToSend' value='" . $filename . "' >";
 	$out .= "<input type='hidden' name='action' value='emailFile' >";
+	$out .= "<input type='hidden' name='input' value='" . print_r($_GET,1) ."' >";
 	$out .= "<input type='submit' value='Email the file' >";
 	$out .= "</form>";
 	$out .= "</fieldset>";

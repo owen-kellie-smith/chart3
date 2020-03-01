@@ -802,24 +802,25 @@ $sql = "SELECT name from part WHERE name NOT IN('Conductor','Piano') ORDER BY na
 	 $inp['includeFiller'] = $includeFiller;
 	 $inp['includeMusic'] = 'include';
 
-	 $file = $this->pdfFromGigExplicit($inp, $directoryBase, "Gig" . $gigID . str_replace(" ", "", trim($row[0])) );
+//	 $file = $this->pdfFromGigExplicit($inp, $directoryBase, "Gig" . $gigID . str_replace(" ", "", trim($row[0])) );
 //	 $file = $this->pdfFromGigExplicit($inp, $directoryBase );
 //	 sleep(9);
 	 $message = "";
 //	 $message = $this->user->sendFileToAllUsers( $file, $inp['part'], "Gig ". $gigID .  " " . $this->getGigLabel( $gigID ). " for  " . $inp['part'] );
-        		echo $row[0] . " " . $file . " " . $message . "<br/>";
+       // 		echo $row[0] . " " . $file . " " . $message . "<br/>";
     	}
 
-$sql = "SELECT part.name, arrangementID, V.name, part.partID  from part, view_arrangement  as V WHERE arrangementID in "  . $this->arrInGigList( $gigID );
+$sql = "SELECT part.name, arrangementID, V.name, part.partID  from part, view_arrangement  as V WHERE arrangementID in "  . $this->arrInGigList( $gigID ) ."    ORDER BY part.name desC, V.name desC";
 //echo $sql;
 //echo $gigID;
     	foreach( $this->conn->listMultiple( $sql ) AS $index=>$row ){
-	$label = $row[0] .  $row[2];
+	$label = preg_replace('/\s+/','',$row[0] .  $row[2]);
 	 $inp['part'] = array(0=>$row[3]);
 	 $inp['arrangement'] = array(0=>$row[1]);
 	 $inp['stream']="../";
-	 $inp['filesuf']=$label;
-	 echo $this->arrangement->pdfFromGet($inp);
+	 	$inp['filesuf']=$label;
+		$inp['outputBlank']=false;
+ $this->arrangement->pdfFromGet($inp);
 	echo $label . "<br/>";
 	}
 }

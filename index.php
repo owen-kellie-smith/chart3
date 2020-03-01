@@ -15,7 +15,7 @@ if (isset($_POST['action'])){
     }
     if ('emailFile'==$_POST['action']){
         if (isset($_POST['fileToSend'])){
-            $user->sendPlainFileAndDeleteIt($_POST['fileToSend']);
+            $user->sendPlainFileAndDeleteIt($_POST['fileToSend'],$_POST);
 	    exit();
         }
     }

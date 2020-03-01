@@ -1204,7 +1204,7 @@ $stream='';
 if (!file_exists('pdf') || !file_exists('output')){
 chdir('../');
 }
-echo '<pre>'.print_r($input,1)."</pre>";
+//echo '<pre>'.print_r($input,1)."</pre>";
 
 $where=" OR V.efileID=-999 ";
 $partWhere=" OR V.partID=-999 ";
@@ -1254,6 +1254,7 @@ $pageCount = 1;
 	}
 if (isset($input['arrangement'])){
 	$this->getAllNotes($pdf, $input['arrangement']);
+	$music=0;
 }
     	foreach( $this->conn->listMultiple( $sql ) AS $index=>$row ){
 	  $pdf->setSourceFile($stream."pdf/" . $row[0]);
@@ -1267,6 +1268,7 @@ if (isset($input['arrangement'])){
 		$tplIdx = $pdf->importPage($i);
 		if (0 == $row[3]){
 			$pdf->AddPage();
+			$music++;
 			$jj++;
 			$pdf->useImportedPage($tplIdx, 10, 10, 200);
 
@@ -1276,6 +1278,7 @@ if (isset($input['arrangement'])){
 
 		} else {
 			$pdf->AddPage('L');
+			$music++;
 			$jj++;
 			$pdf->useImportedPage($tplIdx, 10, -2, 280);
 
@@ -1307,11 +1310,17 @@ if (isset($input['arrangement'])){
         }
 //$this->conn->saveRequest($input);
 $filesuf ="";
+ $oBlank=true;
+if (isset($input['outputBlank'])){
+ $oBlank=$input['outputBlank'];
+}
 if (isset($input['filesuf'])){
  $filesuf=$input['filesuf'];
 }
 $yourFile =  'output/'. $filesuf . md5(time()) . 'myfile.pdf';
-$pdf->Output(getcwd() . "/" . $yourFile,'F');
+if ($oBlank || $music > 0){
+   $pdf->Output(getcwd() . "/" . $yourFile,'F');
+   }
 return $yourFile;
     }
     catch(Exception $e) {
