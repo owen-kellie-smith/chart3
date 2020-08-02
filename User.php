@@ -121,7 +121,7 @@ try {
        $mail->Username = $SMTP['Username'];
        $mail->Password = $SMTP['Password'];
        $mail->SMTPSecure = $SMTP['SMTPSecure'];
-       $mail->Port = $SMPT['Port'];
+       $mail->Port = $SMTP['Port'];
     }
 
 //echo "Host: " . $mail->Host . "<br/>"; 
