@@ -751,6 +751,7 @@ $sql = "SELECT DISTINCT gigID, name, gigDate FROM gig ORDER BY gigDate DESC, nam
     	}
 $setList = $setList . "</select></p>";	
 $form .= $setList;
+$form .= $this->arrangement->getPartCheckboxes();
 $form .= "<p><input type='submit' value='Get parts (output to output folder)'></p></form></fieldset>";
 $form .= "<fieldset><legend>Email parts for set</legend><form action = '' method='GET'>";
 $form .= "<input type='hidden' name='action' value='emailPartsForSet' />";
@@ -789,30 +790,25 @@ $setList .= "</select>";
 return $setList;
 }
 
-function getSetPartsOutput( $gigID, $directoryBase, $includeFiller=false ){
+function getSetPartsOutput( $input, $directoryBase, $includeFiller=false ){
 
-$this->deleteOutput($directoryBase);
+	$gigID = -1; $include = array();
+	if (isset($input['gigID'])){ $gigID = $input['gigID']; }
+	if (isset($input['includePart'])){ $include = $input['includePart']; }
+	if ($gigID > 0 && count($include) > 0){
+		if (isset($include['All'])){
+			$where = " AND 1 ";
+		} else {
+			$where = " AND part.name IN ('Banana'";
+			foreach($include AS $part=>$status){
+				$where .= ",'" . $part ."'";
+			}
+			$where .= ") ";
+//			echo $where;
+		}
+	}
 
-$sql = "SELECT name from part ORDER BY name ASC ";
-$sql = "SELECT name from part WHERE name NOT IN('Conductor','Piano') ORDER BY name ASC ";
-    	foreach( $this->conn->listMultiple( $sql ) AS $index=>$row ){
-         $inp = array();
-	 $inp['gigID'] = $gigID;
-	 $inp['part'] = $row[0];
-	 $inp['includeFiller'] = $includeFiller;
-	 $inp['includeMusic'] = 'include';
-
-//	 $file = $this->pdfFromGigExplicit($inp, $directoryBase, "Gig" . $gigID . str_replace(" ", "", trim($row[0])) );
-//	 $file = $this->pdfFromGigExplicit($inp, $directoryBase );
-//	 sleep(9);
-	 $message = "";
-//	 $message = $this->user->sendFileToAllUsers( $file, $inp['part'], "Gig ". $gigID .  " " . $this->getGigLabel( $gigID ). " for  " . $inp['part'] );
-       // 		echo $row[0] . " " . $file . " " . $message . "<br/>";
-    	}
-
-$sql = "SELECT part.name, arrangementID, V.name, part.partID  from part, view_arrangement  as V WHERE arrangementID in "  . $this->arrInGigList( $gigID ) ."    ORDER BY part.name desC, V.name desC";
-//echo $sql;
-//echo $gigID;
+$sql = "SELECT part.name, arrangementID, V.name, part.partID  from part, view_arrangement  as V WHERE 1 " . $where . " AND arrangementID in "  . $this->arrInGigList( $gigID ) ."    ORDER BY part.name desC, V.name desC";
     	foreach( $this->conn->listMultiple( $sql ) AS $index=>$row ){
 	$label = preg_replace('/\s+/','',$row[0] .  $row[2]);
 	 $inp['part'] = array(0=>$row[3]);

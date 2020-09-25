@@ -199,7 +199,7 @@ if (isset($_GET['action'])){
 
     if ('getPartsForSet'==$_GET['action']){
         if (isset($_GET['gigID'])){
-            $gig->getSetPartsOutput( $_GET['gigID'], dirname(getcwd()));
+            $gig->getSetPartsOutput( $_GET, dirname(getcwd()));
             echo "<a href='../output/'>Output directory</a>";
 
         }

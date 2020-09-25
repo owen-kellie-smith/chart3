@@ -695,6 +695,14 @@ function getPartForm($efileID){
     return $return;
 }
 
+function getPartCheckboxes(){
+    $return = "<p><input type='checkbox' name='includePart[All]' />All</p>";
+    foreach ($this->conn->listMultiple("SELECT P.partID, P.name FROM part as P  order by P.name  ASC")  as $key=>$song){
+        $return .= "<p><input type='checkbox' name='includePart[" . $song[1] . "]' />" . $song[1]  . "</p>";
+    }
+    return $return;
+}
+
 
 function getPeople(){
 
