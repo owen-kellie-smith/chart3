@@ -962,6 +962,8 @@ private function pdfFromGigExplicit($input, $directoryBase, $outputStem=''){
 try{
     $gigID = $input['gigID'];
     $partName = $input['part'];
+    $includeMusic = false;
+    $includeFiller = false;
 if (isset($input['includeFiller'])){
     if ( 'include' == $input['includeFiller']){
         $includeFiller = true;
