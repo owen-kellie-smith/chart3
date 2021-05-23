@@ -214,6 +214,24 @@ $sql = "SELECT G.name, C.countStyle, G.gigID FROM gig as G LEFT  JOIN (SELECT Co
 }
 
 
+function getHasVocal( $arrangementID ){
+
+$sql= "select COUNT(*) FROM publication as P WHERE P.publicationID IN (select publicationID from efile WHERE P.arrangementID = '" . $arrangementID . "' AND efileID IN (select efileID from efilePart where partID in (select partID from part where minSectionID=6))) ;";
+
+include "mysql-cred.php";
+$link  = mysqli_connect( $servername, $username, $password, $database);
+$result = mysqli_query($link, $sql);
+// echo $sql;
+foreach( $this->conn->listMultiple( $sql ) AS $index=>$row ){
+		if ($row[0]>0){
+         	    	return true;
+		}
+}
+
+return false;
+}
+
+
 
 function getArrangementLabel( $arrangementID ){
 $sql = "SELECT VA.name, VA.arrangerFirstName, VA.arrangerLastName, IFNULL(P.description ,'') FROM view_arrangement AS VA LEFT JOIN (SELECT description, arrangementID FROM publication WHERE arrangementID=" . $arrangementID . ") AS P ON P.arrangementID = VA.arrangementID WHERE VA.arrangementID=" . $arrangementID ;
@@ -369,6 +387,36 @@ if ($result){
 		$icount ++;
     	}
 	if ($icount > 0) $ulist .="</ul></li></ol>";
+}
+return $ulist;
+}
+
+function getURLListFor1($arrangementID, $showTitles = false){
+include "mysql-cred.php";
+$link  = mysqli_connect( $servername, $username, $password, $database);
+if (mysqli_connect_errno()) {
+    die("Connection failed: " . mysqli_connect_error());
+} 
+
+$sql = "SELECT urlurl, urlTypeName, urlTSB, S.name, A.arrangementID, IFNULL(urlTitle,urlurl), urlYouTubeID from song as S INNER JOIN arrangement AS A on S.songID = A.songID INNER JOIN url ON url.urlArrangementID = A.arrangementID INNER JOIN urlType ON url.urlTypeID = urlType.urlTypeID WHERE A.arrangementID='" . $arrangementID . "' ORDER BY S.name ASC, url.urlTypeID DESC, urlID ASC  ";
+$result = mysqli_query($link, $sql);
+$ulist = "";
+$isTSB = "";
+if ($result){
+	$li=""; $icount = 0;
+    	while($row = mysqli_fetch_row( $result )) {
+		if (0==$icount) $ulist .= "<ul> \n"; 
+		if (1==$row[2]) $isTSB = " TSB ";
+		if ($showTitles){
+	        	$li = "<a href='" . $row[0] . "'>"  . $row[5] . "</a> " . $row[1] . $isTSB . "\n";
+		} else {
+	        	$li = "<a href='" . $row[0] . "'>"  . $row[0] . "</a> " . $row[1] . $isTSB . "\n";
+		}
+		$ulist .= "<li>". $li . "</li>\n";
+		$isTSB = "";
+		$icount ++;
+    	}
+	if ($icount > 0) $ulist .="</ul> \n";
 }
 return $ulist;
 }

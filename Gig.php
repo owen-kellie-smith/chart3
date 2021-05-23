@@ -186,7 +186,7 @@ function getFileLabelForArrangementGig( $arrangementID, $gigID ){
 	return $ret;
 }
 
-function getStyleLabelForArrangement( $arrangementID ){
+function getStyleLabelForArrangement( $arrangementID, $withLink=true ){
 	$ret = "";
 	$list = $this->getStylesForArrangement( $arrangementID );
 //	print_r($list);
@@ -195,9 +195,13 @@ function getStyleLabelForArrangement( $arrangementID ){
 		$ret = "(";
 
 		for ($i = 0, $ii = count($list) ; $i < $ii; $i++){
+                     if ($withLink){
 			$ret .= "<a href='.?action=getGig&gigID=" . $list[$i][1] . "'>";
 			$ret .= $list[$i][0] ;
 			$ret .= "</a>";
+                     } else {
+			$ret .= $list[$i][0] ;
+                     }
 			if ($i < $ii - 1){
 				$ret .= ", ";	
 			}
@@ -285,13 +289,24 @@ function getChartsForGig( $gigID = -1, $input=array()){
     $return = "<p>" . $ret['labelFilter'] . "</p>";
     $return.= "<ol>";
     foreach ($ret['list'] AS $count=>$retlist){
+        $labelVocal = "";
+        if ($this->arrangement->getHasVocal( $retlist['arrangementID'])){ $labelVocal=" (V) "; }
+        $label = $retlist['label'];
         $label = $retlist['label'];
         $labelPads = "*";
         if( $retlist['inPads']) $labelPads = "";
         $label2 = "";
 //        if( !$retlist['backup']) $label2 .= " (no back-up)";
-        $check = $labelPads . "<a href='.?gigID=". $gigID . "&arrangementID=" . $retlist['arrangementID'] . "'>".$label . "</a>". " " . $this->getStyleLabelForArrangement( $retlist['arrangementID'] ) .  $label2 . $this->getFileLabelForArrangementGig( $retlist['arrangementID'], $gigID ) . $this->getUrlLabelForArrangementGig( $retlist['arrangementID'], $gigID ) . "\n" . " ";
-        $return .= "<li><p>" . $check . "</p></li>";
+        if (isset($input['playAlong'])){
+           $check = $labelPads . $labelVocal . $label . " " . $this->getStyleLabelForArrangement( $retlist['arrangementID'], false ) .  $label2 . $this->getFileLabelForArrangementGig( $retlist['arrangementID'], $gigID ) . $this->getUrlLabelForArrangementGig( $retlist['arrangementID'], $gigID ) . "\n" . " ";
+        } else {
+           $check = $labelPads . $labelVocal . "<a href='.?gigID=". $gigID . "&arrangementID=" . $retlist['arrangementID'] . "'>".$label . "</a>". " " . $this->getStyleLabelForArrangement( $retlist['arrangementID'] ) .  $label2 . $this->getFileLabelForArrangementGig( $retlist['arrangementID'], $gigID ) . $this->getUrlLabelForArrangementGig( $retlist['arrangementID'], $gigID ) . "\n" . " ";
+	}
+        $return .= "<li><p>" . $check . "</p>";
+        if (isset($input['playAlong'])){
+           $return .= $this->arrangement->getURLListFor1( $retlist['arrangementID']); 
+        }
+        $return .= "</li>";
     }
     $return .= "</ol>";
     return $return;
