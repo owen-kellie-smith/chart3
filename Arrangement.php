@@ -12,6 +12,34 @@ private $userX;
         $this->userX = New User();
     }
 
+function echoCheckURL($file, $label=""){
+     if ($this->fileExists($file)){
+	echo "OK ";
+     } else {
+        echo "MISSING "; 
+     }
+     echo " " .  $label . " " . $file. "\r\n <br>";
+}
+
+function checkURLs(){
+     $sql = "select urlID, urlurl, urlTitle FROM url ORDER BY urlID ASC";
+     foreach( $this->conn->listMultiple($sql) as $index=>$row ){
+       $file = $row[1];
+       $label = $row[0] . ". " . $row[2];
+       $this->echoCheckURL($file, $label);
+     }
+}
+
+function fileExists($file){
+// https://stackoverflow.com/questions/2280394/how-can-i-check-if-a-url-exists-via-php
+   $file_headers = @get_headers($file);
+   if(!$file_headers || $file_headers[0] == 'HTTP/1.1 404 Not Found') {
+     $exists = false;
+   } else {
+    $exists = true;
+   }
+   return $exists;
+}
 
 function sHeader( $input ){
      $header = "";

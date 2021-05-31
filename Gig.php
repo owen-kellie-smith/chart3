@@ -547,6 +547,7 @@ if ($result){
                 $i++;
     	}
 	$form .= "</select>";
+        $form .= "<input type = 'checkbox' name='playAlong' value='playAlong' >Show play-along links";
 }
 $form .= "<input type='submit' value='Change gig'></form>";
 

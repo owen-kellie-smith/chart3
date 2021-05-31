@@ -182,6 +182,7 @@ if ($user->hasValidCookie()){
 echo "<p><a href='../'>Main menu</a></p>";
 echo "<p><a href='./?action=getNewSetListForm'>Edit set</a></p>";
 echo "<p><a href='./?action=getNotes'>Edit notes</a></p>";
+echo "<p><a href='./?action=checkURLs'>Check URLs exist</a></p>";
 if ($user->hasAdminCookie()){
 echo "<p><a href='./?action=getParts'>Assign parts</a></p>";
 echo "<p><a href='./?action=listPdf'>Add pdf</a></p>";
@@ -195,6 +196,10 @@ if (isset($_GET['action'])){
         } else {
             echo $arrangement->getEFileForm();
         }    
+    }
+
+    if ('checkURLs'==$_GET['action']){
+            $arrangement->checkURLs();
     }
 
     if ('getPartsForSet'==$_GET['action']){
