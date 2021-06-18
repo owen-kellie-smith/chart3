@@ -1322,8 +1322,9 @@ $sql = "SELECT V.fileName, V.startPage, V.endPage, V.formatID, V.partName, V.son
 $pdf = new Fpdi\Fpdi();
 
 $pageCount = 1;
-	$pdf->AddPage();
 	$pdf->SetFont('Arial','',14);
+   if (!isset($input['noTitle'])){
+	$pdf->AddPage();
     	foreach( $this->conn->listMultiple( $sql ) AS $index=>$row ){
 // 	$pdf->Write(5,$pageCount . "  (" . $row[4] . ") ");
 		if (0 == $row[3]){
@@ -1336,8 +1337,11 @@ $pageCount = 1;
         $pdf->Write(5,$row[5] . "\n");
 	$pageCount = $pageCount + 1 + $row[2] - $row[1];
 	}
+   }
 if (isset($input['arrangement'])){
+        if (!isset($input['noNotes'])){
 	$this->getAllNotes($pdf, $input['arrangement']);
+        }
 	$music=0;
 }
     	foreach( $this->conn->listMultiple( $sql ) AS $index=>$row ){
@@ -1401,7 +1405,12 @@ if (isset($input['outputBlank'])){
 if (isset($input['filesuf'])){
  $filesuf=$input['filesuf'];
 }
-$yourFile =  'output/'. $filesuf . md5(time()) . 'myfile.pdf';
+if (isset($input['time'])){
+$yourFile =  'output/'. $filesuf . md5(time()) . '.pdf';
+} else {
+$yourFile =  'output/'. $filesuf . '.pdf';
+} 
+
 if ($oBlank || $music > 0){
    $pdf->Output(getcwd() . "/" . $yourFile,'F');
    }

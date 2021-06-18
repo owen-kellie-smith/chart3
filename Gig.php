@@ -826,12 +826,15 @@ function getSetPartsOutput( $input, $directoryBase, $includeFiller=false ){
 
 $sql = "SELECT part.name, arrangementID, V.name, part.partID  from part, view_arrangement  as V WHERE 1 " . $where . " AND arrangementID in "  . $this->arrInGigList( $gigID ) ."    ORDER BY part.name desC, V.name desC";
     	foreach( $this->conn->listMultiple( $sql ) AS $index=>$row ){
-	$label = preg_replace('/\s+/','',$row[0] .  $row[2]);
+	$label = preg_replace('/\s+/','',$row[0] . "_" .  $row[2]);
 	 $inp['part'] = array(0=>$row[3]);
 	 $inp['arrangement'] = array(0=>$row[1]);
 	 $inp['stream']="../";
 	 	$inp['filesuf']=$label;
 		$inp['outputBlank']=false;
+	 if (isset($input['noPad'])){ $inp['noPad']=true; }
+	 if (isset($input['noNotes'])){ $inp['noNotes']=true; }
+	 if (isset($input['noTitle'])){ $inp['noTitle']=true; }
  $this->arrangement->pdfFromGet($inp);
 	echo $label . "<br/>";
 	}
