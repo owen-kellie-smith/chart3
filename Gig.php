@@ -298,11 +298,13 @@ function getChartsForGig( $gigID = -1, $input=array()){
         $label2 = "";
 //        if( !$retlist['backup']) $label2 .= " (no back-up)";
         if (isset($input['playAlong'])){
+           if (strlen($this->arrangement->getURLListFor1( $retlist['arrangementID'])) > 5){
            $check = $labelPads . $labelVocal . $label . " " . $this->getStyleLabelForArrangement( $retlist['arrangementID'], false ) .  $label2 . $this->getFileLabelForArrangementGig( $retlist['arrangementID'], $gigID ) . $this->getUrlLabelForArrangementGig( $retlist['arrangementID'], $gigID ) . "\n" . " ";
+	   } else { $check=""; }
         } else {
            $check = $labelPads . $labelVocal . "<a href='.?gigID=". $gigID . "&arrangementID=" . $retlist['arrangementID'] . "'>".$label . "</a>". " " . $this->getStyleLabelForArrangement( $retlist['arrangementID'] ) .  $label2 . $this->getFileLabelForArrangementGig( $retlist['arrangementID'], $gigID ) . $this->getUrlLabelForArrangementGig( $retlist['arrangementID'], $gigID ) . "\n" . " ";
 	}
-        $return .= "<li><p>" . $check . "</p>";
+        if (strlen($check)>1) $return .= "<li><p>" . $check . "</p>";
         if (isset($input['playAlong'])){
            $return .= $this->arrangement->getURLListFor1( $retlist['arrangementID']); 
         }
