@@ -826,9 +826,9 @@ function getSetPartsOutput( $input, $directoryBase, $includeFiller=false ){
 		}
 	}
 
-$sql = "SELECT part.name, arrangementID, V.name, part.partID  from part, view_arrangement  as V WHERE 1 " . $where . " AND arrangementID in "  . $this->arrInGigList( $gigID ) ."    ORDER BY part.name desC, V.name desC";
+$sql = "SELECT part.name, arrangementID, V.name, part.partID, arrangerFirstName, arrangerLastName  from part, view_arrangement  as V WHERE 1 " . $where . " AND arrangementID in "  . $this->arrInGigList( $gigID ) ."    ORDER BY part.name desC, V.name desC";
     	foreach( $this->conn->listMultiple( $sql ) AS $index=>$row ){
-	$label = preg_replace('/\s+/','',$row[0] . "_" .  $row[2]);
+	$label = preg_replace('/\s+/','',$row[0] . "_" .  $row[2] . "_" . $row[4] . $row[5]);
 	 $inp['part'] = array(0=>$row[3]);
 	 $inp['arrangement'] = array(0=>$row[1]);
 	 $inp['stream']="../";
