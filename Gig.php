@@ -825,6 +825,26 @@ function getSetPartsOutput( $input, $directoryBase, $includeFiller=false ){
 //			echo $where;
 		}
 	}
+	if (isset($input['byPart'])){
+		if (isset($include['All'])){
+                    $sql = "SELECT part.name  from part  ORDER BY part.name desC";
+    	            foreach( $this->conn->listMultiple( $sql ) AS $index=>$row ){
+	                $include[$row[0]] = 'on';
+//			echo "<pre>" . print_r($row,1) . "</pre>";
+		    }
+		}
+		//echo "<pre>" . print_r($include,1) . "</pre>";
+		        $in2 = $input;
+			$in2['includeMusic']= 'include';
+			echo "start of parts";
+			foreach($include AS $part=>$status){
+				$in2['part'] = $part;
+//				echo "<pre>" . print_r($in2) . "</pre>";
+				echo  "<pre>" . $this->pdfFromGigExplicit( $in2, dirname(getcwd()) )  . "</pre>";
+			}
+			echo "end of parts";
+	} else {
+		echo "<pre> add &byPart&noNotes to the url to get pdfs 1 per Part with no notes. </pre>";
 
 $sql = "SELECT part.name, arrangementID, V.name, part.partID, arrangerFirstName, arrangerLastName  from part, view_arrangement  as V WHERE 1 " . $where . " AND arrangementID in "  . $this->arrInGigList( $gigID ) ."    ORDER BY part.name desC, V.name desC";
     	foreach( $this->conn->listMultiple( $sql ) AS $index=>$row ){
@@ -839,6 +859,7 @@ $sql = "SELECT part.name, arrangementID, V.name, part.partID, arrangerFirstName,
 	 if (isset($input['noTitle'])){ $inp['noTitle']=true; }
  $this->arrangement->pdfFromGet($inp);
 	echo $label . "<br/>";
+	}
 	}
 }
 
@@ -980,11 +1001,13 @@ if (isset($input['gigID']) && isset($input['part'])){
 }
 
 private function pdfFromGigExplicit($input, $directoryBase, $outputStem=''){
+//	echo "<pre> pdfFromGigEcplicit " . print_r($input,1) . "</pre>";
 try{
     $gigID = $input['gigID'];
     $partName = $input['part'];
     $includeMusic = false;
     $includeFiller = false;
+    $noNotes = false;
 if (isset($input['includeFiller'])){
     if ( 'include' == $input['includeFiller']){
         $includeFiller = true;
@@ -998,6 +1021,10 @@ if (isset($input['includeMusic'])){
       $orderAlpha = false;
 if (isset($input['orderAlpha'])){
        $orderAlpha = true;
+}    
+if (isset($input['noNotes'])){
+       $noNotes = true;
+//       echo $noNotes;
 }    
 $where="";
 $partWhere="";
@@ -1099,7 +1126,11 @@ $pdf = new Fpdi\Fpdi();
 	}
 
 
-$this->arrangement->getAllNotes($pdf, $arrange);
+	if (!$noNotes){
+	       	$this->arrangement->getAllNotes($pdf, $arrange);
+	} else {
+	}
+
 
 if ($includeMusic){
     foreach( $this->conn->listMultiple( $sqlIncludeMusic ) AS $index=>$row ){
@@ -1139,7 +1170,9 @@ if ($includeMusic){
 	$pagesSoFar = $pdf->PageNo();
 	$singleArr = array();
 	$singleArr[]=$row[5]; // arrangementID
-        $this->arrangement->getAllNotes($pdf, $singleArr);
+	if (!$noNotes){
+          $this->arrangement->getAllNotes($pdf, $singleArr);
+	}
 	$newNotePages = $pdf->PageNo() - $pagesSoFar;
 	$jj = $jj + $newNotePages;
           // pad out with empty pages
@@ -1164,7 +1197,8 @@ if ($includeMusic){
 } else { // end if ($includeMusic)
 $pdf->Write(5,"\n(music excluded)\n");
 }
-$yourFile =  'output/'. $outputStem . md5(time()) . 'myfile.pdf';
+$yourFile =  'output/Gig'. $gigID . str_replace(" ","_",$partName) . '.pdf';
+//$yourFile =  'output/'. $outputStem . md5(time()) . 'myfile.pdf'; // old dumb idea to avoid clashes 
 $pdf->Output($directoryBase . "/" . $yourFile,'F');            
 return $yourFile;
 } catch(Exception $e) {
